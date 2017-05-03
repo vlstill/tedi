@@ -1,0 +1,254 @@
+\documentclass[11pt,twoside,a4paper]{book}
+\usepackage[shorthands=off,english]{babel} % package for multilingual support
+
+\RequirePackage{iftex}
+\ifPDFTeX
+    \usepackage[utf8]{inputenc} 
+    \usepackage[T1]{fontenc}
+    % \usepackage{lmodern}
+\else
+    \RequirePackage{fontspec} % UFT8 fonts for LuaLaTeX
+    % \setmainfont{Latin Modern Roman}
+\fi
+\usepackage{csquotes}
+
+\usepackage[ backend=biber
+           , style=numeric
+           , sortlocale=en_US
+           , bibencoding=UTF8
+           , maxcitenames=3
+           , maxbibnames=100
+           ]{biblatex}
+
+\usepackage{xcolor}
+\definecolor{dark-red}{rgb}{0.6,0.15,0.15}
+\definecolor{dark-green}{rgb}{0.15,0.4,0.15}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+\usepackage[ pdfauthor={Vladimir Still}
+           , pdftitle={TBD},
+           , pdfsubject={XXX},
+           , plainpages=false
+           , pdfpagelabels
+           , unicode
+           , draft=false
+           , colorlinks=true
+           , linkcolor={dark-red}
+           , citecolor={dark-green}
+           , urlcolor={medium-blue}
+           , unicode=true
+           ]{hyperref}
+
+\usepackage{amssymb,amsmath}
+\usepackage{verbatim}
+\usepackage[final]{listings}
+\lstset{ language=C++ }
+\usepackage{paralist}
+% use upquote for straight quotes in verbatim environments
+\usepackage{upquote}
+\usepackage{markdownsyntax}
+
+\usepackage{xspace}
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning}
+\usepackage{pdfpages}
+
+\usepackage{float}
+\makeatletter
+% custom float style, derived from ruled
+% - caption is at the bottom
+% - spaces before and after figure are larger
+% - rules are thinner
+% - bottom rule is missing
+\newcommand\floatc@botruled[2]{{\@fs@cfont #1} #2\par}
+\newcommand\fs@botruled{\def\@fs@cfont{\bfseries}\let\@fs@capt\floatc@botruled
+    \def\@fs@pre{\hrule\kern0.5\abovecaptionskip}%
+    \def\@fs@post{}%
+    \def\@fs@mid{\kern0.5\abovecaptionskip\hrule\kern0.5\abovecaptionskip}%
+\let\@fs@iftopcapt\iffalse}
+\makeatother
+\floatstyle{botruled}
+\restylefloat{figure}
+% \restylefloat{table}
+\usepackage[labelfont=bf]{caption}
+
+\usepackage{multirow}
+\usepackage{microtype}
+
+\usepackage{tabularx}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\usepackage{arydshln}
+\newcommand{\dg}{\textsuperscript{\dag}}
+
+\newcommand{\divine}{\mbox{\textsf{DIVINE}}\xspace}
+\newcommand{\lart}{\mbox{\textsf{LART}}\xspace}
+
+\newcommand{\paradise}{ParaDiSe\xspace}
+\newcommand{\buchi}{Büchi\xspace}
+\newcommand{\mc}{model checking\xspace}
+\newcommand{\mcer}{model-checker\xspace}
+\newcommand{\Mcer}{Model-checker\xspace}
+\newcommand{\Mc}{Model checking\xspace}
+
+\newcommand{\spin}{\mbox{\textsc{Spin}}\xspace} 
+\newcommand{\ltsmin}{\mbox{LTSmin}\xspace}
+
+\newcommand{\llvm}{\textsf{LLVM}\xspace}
+\newcommand{\ltl}{LTL\xspace}
+
+\newcommand{\dfs}{DFS\xspace}
+\newcommand{\bfs}{BFS\xspace}
+
+\newcommand{\tc}{tree compression\xspace}
+\newcommand{\Tc}{Tree compression\xspace}
+\newcommand{\tced}{tree-compressed\xspace}
+\newcommand{\Tced}{Tree-compressed\xspace}
+
+\newcommand{\darcs}{Darcs\xspace}
+
+\newcommand{\tso}{TSO\xspace}
+\newcommand{\pso}{PSO\xspace}
+\newcommand{\xtso}{x86-TSO}
+
+\newcommand{\FI}{Faculty of Informatics}
+\newcommand{\MU}{Masaryk University}
+
+\newcommand{\Jirik}{doc. RNDr. Jiří Barnat, Ph.D.}
+\newcommand{\Mornfall}{RNDr. Petr Ročkai, Ph.D.}
+
+\newcommand{\thesistitle}{TBD} % enter thesis title
+\newcommand{\thesissubtitle}{XXX}
+\newcommand{\thesisauthor}{Vladimír Štill}
+\newcommand{\thesisYearCity}{Brno, 2016}
+\newcommand{\thesisadvisor}{\Jirik}
+
+\newcommand{\note}{\textit{Note:}\xspace}
+
+\addbibresource{bibliography.bib}
+
+\usepackage{setspace}
+
+% Mornfall
+% \oddsidemargin .85in % 2.16 cm
+% \evensidemargin .65in % 1.65 cm
+% defaults:
+% \oddsidemargin 7.73203 mm % 70pt
+% \evensidemargin 24.6019 mm % 22pt
+\addtolength\textwidth{5pt} % about 129mm
+\addtolength\oddsidemargin{1cm}
+\addtolength\evensidemargin{-1cm}
+% \usepackage{layout, layouts}
+% \newcommand\DocLength[1]{%
+%      The value for \texttt{#1} is \printinunitsof{pt}\prntlen{\csname#1\endcsname}\par}
+
+
+\usepackage{enumitem}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}%
+  \setlength{\parskip}{0pt}%
+  \setlength{\topsep}{0pt}%
+  \setlength{\partopsep}{0pt}}
+
+% \newcommand{\TODO}[1]{\textbf{\color{red}#1}}
+
+% autoref names
+\addto\extrasenglish{
+    \renewcommand{\chapterautorefname}{Chapter}
+    \renewcommand{\sectionautorefname}{Section}
+    \renewcommand{\subsectionautorefname}{Section}
+}
+
+\newcommand{\rot}[1]{\rotatebox{90}{#1\hspace*{0.5em}}}
+
+% LUA magic
+
+\directlua{dofile("thesis.lua")}
+
+\newcommand{\mem}[1]{\directlua{tex.sprint(mem(#1))}}
+\newcommand{\dmem}[1]{\mem{#1 * 1024}}
+\newcommand{\si}[1]{\directlua{tex.sprint(si(#1))}}
+\newcommand{\speedup}[2]{\directlua{tex.sprint(speedup(#1, #2))}}
+
+\newcommand{\antispaceatend}{\vspace*{-\topsep}}
+
+% \setlength{\overfullrule}{5pt} % TODO: remove
+
+\begin{document}
+
+% \DocLength{evensidemargin}
+% \DocLength{oddsidemargin}
+% \layout
+
+% initial pages from Mornfall + modifications
+
+\frontmatter
+\pagestyle{empty}
+ 
+\begin{center}
+    {\Large \sc \FI, \MU}
+    \vskip4em
+    \includegraphics[width = 4cm, height = 4cm] {logo_fi.pdf}
+    \vskip4em
+    {\begin{spacing}{1}
+        \Huge \bf \thesistitle
+    \end{spacing}}
+    \vskip2em
+    {\Large \sc \thesissubtitle}
+    \vskip4em
+    {\LARGE \bf \thesisauthor}
+    \vfill
+    {\hfill \large \thesisYearCity}
+\end{center}
+ 
+\cleardoublepage
+
+% only in print version!
+\iffalse %@ifprint
+\includepdf[pages={1}]{zadani.pdf}
+\includepdf[pages={1}]{prohlaseni.pdf}
+\cleardoublepage
+\fi
+
+\section*{Declaration} % from Mornfall
+Thereby I declare that this thesis is my original work, which I have
+created on my own. All sources and literature used in writing the
+thesis, as well as any quoted material, are properly cited, including
+full reference to its source.
+
+\vfill
+\textbf{Advisor:} \thesisadvisor
+
+\cleardoublepage
+
+\section*{Abstract}
+
+
+\section*{Keywords}
+
+\cleardoublepage
+
+\section*{Acknowledgements}
+
+\cleardoublepage
+% \clearpage
+\thispagestyle{empty}
+
+\pagestyle{headings}
+\tableofcontents % prints table of contents
+\mainmatter
+
+\chapter{Introduction}\label{chap:introduction}
+% \input{intro}
+
+
+\chapter{Conclusion} \label{chap:conclusion}
+% \input{conclusion}
+
+\appendix
+
+\chapter*{Bibliography}
+\addcontentsline{toc}{chapter}{Bibliography}
+\markboth{}{} % avoid headers from last chapter in bibliography
+\printbibliography[heading=none]
+
+\end{document}

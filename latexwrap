@@ -1,0 +1,63 @@
+#!/bin/sh
+
+[ -x $(which lualatex) ] || { echo "luaflatex not found!" >&2; exit 1; }
+
+if [[ ${1::2} = "-n" ]]; then
+    N=${1:2}
+    shift
+else
+    N=5
+fi
+
+# parse -I parameters and convert them to TEXINPUTS variable
+TEXINPUTS="."
+FILE=""
+ARGS=""
+for ARG in "$@"; do
+    if echo $ARG | egrep -q '^-I'; then
+        INC=`echo $ARG | sed 's/^-I//'`
+        TEXINPUTS="$TEXINPUTS:$INC"
+    else
+        ARGS="$ARGS $ARG"
+        if [ "x$FILE" = "x" ]; then
+            FILE=$ARG
+        fi
+    fi
+done
+LOG=`echo $FILE | sed 's/\.tex/.log/'`
+
+TEXINPUTS="$TEXINPUTS:"
+export TEXINPUTS
+
+# immitate rubber (actually better then rubber for beamer :-})
+echo -n "compiling $FILE"
+for i in $(seq 1 $N); do
+    if lualatex $ARGS </dev/null >/dev/null 2>/dev/null; then
+        echo -n '.'
+        rerun=0
+        if egrep -q "^LaTeX Warning:.*Rerun" $LOG || egrep -q "^\(rerunfilecheck\).*Rerun" $LOG; then
+            rerun=1
+        fi
+        if [[ $i = 1 ]] && grep -q "^Package biblatex Warning: Please (re)run Biber on the file:" $LOG; then
+            base=$(echo $FILE | sed 's/.tex//')
+            if ! biber $base >& ${base}.bib.log; then
+                cat ${base}.bib.log
+                exit 3
+            fi
+            echo -n 'b'
+            rerun=1
+        fi
+        
+        if [[ $rerun != 1 ]]; then
+            echo " done"
+            fgrep -i 'warning' $LOG
+            exit 0
+        fi
+    else
+        cat $LOG
+        echo `readlink -f $FILE`
+        exit 2
+    fi
+done
+    
+
