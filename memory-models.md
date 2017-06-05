@@ -6,7 +6,15 @@
 *   memory model of the programming language (if any)
 *   memory model in the mind of the programmer
 
+# Description of Memory Model Semantics
+
+## Axiomatic Classification
+
+## Operational Classification
+
 # Theorectical Memory Models
+
+## Sequential Consistency
 
 ## Total Store Order
 
@@ -18,9 +26,9 @@
 
 ## AMD64
 
-aaa
-
 ## ARM
+
+## Power
 
 # Memory Models of Programming Languages
 

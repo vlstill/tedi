@@ -116,7 +116,7 @@
 \newcommand{\Jirik}{prof. RNDr. Jiří Barnat, Ph.D.}
 \newcommand{\Mornfall}{RNDr. Petr Ročkai, Ph.D.}
 
-\newcommand{\thesistitle}{Abstractions using Code Transformations} % enter thesis title
+\newcommand{\thesistitle}{Memory-Model-Aware Verification} % enter thesis title
 \newcommand{\thesissubtitle}{PHD Thesis Proposal}
 \newcommand{\thesisauthor}{Vladimír Štill}
 \newcommand{\thesisYearCity}{Brno, 2017}
@@ -160,7 +160,7 @@
 
 \newcommand{\antispaceatend}{\vspace*{-\topsep}}
 
-% \setlength{\overfullrule}{5pt} % TODO: remove
+\setlength{\overfullrule}{5pt} % TODO: remove
 
 \begin{document}
 
@@ -206,14 +206,22 @@
 \mainmatter
 
 \chapter{Introduction}\label{chap:introduction}
-% \input{intro}
+\input{intro}
 
-\chapter{Relaxed Memory Models}
+\chapter{Relaxed Memory Models}\label{chap:rmos}
 \input{memory-models}
 
+\chapter{Verification Techniques for Memory Models}\label{chap:verification}
+\input{verification}
+
+\chapter{Achieved Results}\label{chap:results}
+\input{results}
+
+\chapter{Aim of the Work}\label{chap:aim}
+\input{aim}
 
 \chapter{Conclusion} \label{chap:conclusion}
-% \input{conclusion}
+\input{conclusion}
 
 \appendix
 
