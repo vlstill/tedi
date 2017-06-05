@@ -113,13 +113,13 @@
 \newcommand{\FI}{Faculty of Informatics}
 \newcommand{\MU}{Masaryk University}
 
-\newcommand{\Jirik}{doc. RNDr. Jiří Barnat, Ph.D.}
+\newcommand{\Jirik}{prof. RNDr. Jiří Barnat, Ph.D.}
 \newcommand{\Mornfall}{RNDr. Petr Ročkai, Ph.D.}
 
-\newcommand{\thesistitle}{TBD} % enter thesis title
-\newcommand{\thesissubtitle}{XXX}
+\newcommand{\thesistitle}{Abstractions using Code Transformations} % enter thesis title
+\newcommand{\thesissubtitle}{PHD Thesis Proposal}
 \newcommand{\thesisauthor}{Vladimír Štill}
-\newcommand{\thesisYearCity}{Brno, 2016}
+\newcommand{\thesisYearCity}{Brno, 2017}
 \newcommand{\thesisadvisor}{\Jirik}
 
 \newcommand{\note}{\textit{Note:}\xspace}
@@ -127,20 +127,9 @@
 \addbibresource{bibliography.bib}
 
 \usepackage{setspace}
-
-% Mornfall
-% \oddsidemargin .85in % 2.16 cm
-% \evensidemargin .65in % 1.65 cm
-% defaults:
-% \oddsidemargin 7.73203 mm % 70pt
-% \evensidemargin 24.6019 mm % 22pt
 \addtolength\textwidth{5pt} % about 129mm
 \addtolength\oddsidemargin{1cm}
 \addtolength\evensidemargin{-1cm}
-% \usepackage{layout, layouts}
-% \newcommand\DocLength[1]{%
-%      The value for \texttt{#1} is \printinunitsof{pt}\prntlen{\csname#1\endcsname}\par}
-
 
 \usepackage{enumitem}
 \providecommand{\tightlist}{%
@@ -149,7 +138,7 @@
   \setlength{\topsep}{0pt}%
   \setlength{\partopsep}{0pt}}
 
-% \newcommand{\TODO}[1]{\textbf{\color{red}#1}}
+\newcommand{\TODO}[1]{\textbf{\color{red}#1}}
 
 % autoref names
 \addto\extrasenglish{
@@ -175,10 +164,6 @@
 
 \begin{document}
 
-% \DocLength{evensidemargin}
-% \DocLength{oddsidemargin}
-% \layout
-
 % initial pages from Mornfall + modifications
 
 \frontmatter
@@ -197,31 +182,14 @@
     \vskip4em
     {\LARGE \bf \thesisauthor}
     \vfill
-    {\hfill \large \thesisYearCity}
 \end{center}
+\textbf{Supervisor:}\\
+\thesisadvisor \hfill \large \thesisYearCity
  
 \cleardoublepage
 
-% only in print version!
-\iffalse %@ifprint
-\includepdf[pages={1}]{zadani.pdf}
-\includepdf[pages={1}]{prohlaseni.pdf}
-\cleardoublepage
-\fi
-
-\section*{Declaration} % from Mornfall
-Thereby I declare that this thesis is my original work, which I have
-created on my own. All sources and literature used in writing the
-thesis, as well as any quoted material, are properly cited, including
-full reference to its source.
-
-\vfill
-\textbf{Advisor:} \thesisadvisor
-
-\cleardoublepage
-
 \section*{Abstract}
-
+\input{abstract}
 
 \section*{Keywords}
 
@@ -239,6 +207,9 @@ full reference to its source.
 
 \chapter{Introduction}\label{chap:introduction}
 % \input{intro}
+
+\chapter{Relaxed Memory Models}
+\input{memory-models}
 
 
 \chapter{Conclusion} \label{chap:conclusion}
