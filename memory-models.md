@@ -6,6 +6,8 @@
 *   memory model of the programming language (if any)
 *   memory model in the mind of the programmer
 
+# Hardware View of Memory Relaxation
+
 # Description of Memory Model Semantics
 
 ## Axiomatic Classification
@@ -35,6 +37,8 @@
 ## C and C++
 
 ## Java
+
+## \llvm
 
 # Memory Models and Compilers
 
