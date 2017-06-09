@@ -85,10 +85,6 @@
 
 \newcommand{\paradise}{ParaDiSe\xspace}
 \newcommand{\buchi}{Büchi\xspace}
-\newcommand{\mc}{model checking\xspace}
-\newcommand{\mcer}{model-checker\xspace}
-\newcommand{\Mcer}{Model-checker\xspace}
-\newcommand{\Mc}{Model checking\xspace}
 
 \newcommand{\spin}{\mbox{\textsc{Spin}}\xspace} 
 \newcommand{\ltsmin}{\mbox{LTSmin}\xspace}
@@ -96,19 +92,14 @@
 \newcommand{\llvm}{\textsf{LLVM}\xspace}
 \newcommand{\ltl}{LTL\xspace}
 
-\newcommand{\dfs}{DFS\xspace}
-\newcommand{\bfs}{BFS\xspace}
-
-\newcommand{\tc}{tree compression\xspace}
-\newcommand{\Tc}{Tree compression\xspace}
-\newcommand{\tced}{tree-compressed\xspace}
-\newcommand{\Tced}{Tree-compressed\xspace}
-
 \newcommand{\darcs}{Darcs\xspace}
 
 \newcommand{\tso}{TSO\xspace}
 \newcommand{\pso}{PSO\xspace}
 \newcommand{\xtso}{x86-TSO}
+
+\newcommand{\dorel}[1]{\ifmmode\mathbin{#1}\else${#1}$\fi}
+\newcommand{\rel}[1]{\dorel{\xrightarrow{\mathrm{#1}}}}
 
 \newcommand{\FI}{Faculty of Informatics}
 \newcommand{\MU}{Masaryk University}
@@ -116,7 +107,7 @@
 \newcommand{\Jirik}{prof. RNDr. Jiří Barnat, Ph.D.}
 \newcommand{\Mornfall}{RNDr. Petr Ročkai, Ph.D.}
 
-\newcommand{\thesistitle}{Memory-Model-Aware Verification} % enter thesis title
+\newcommand{\thesistitle}{Memory-Model-Aware Analysis} % enter thesis title
 \newcommand{\thesissubtitle}{PHD Thesis Proposal}
 \newcommand{\thesisauthor}{Vladimír Štill}
 \newcommand{\thesisYearCity}{Brno, 2017}
@@ -211,7 +202,7 @@
 \chapter{Relaxed Memory Models}\label{chap:rmos}
 \input{memory-models}
 
-\chapter{Verification Techniques for Memory Models}\label{chap:verification}
+\chapter{Analysis Techniques for Memory Models}\label{chap:verification}
 \input{verification}
 
 \chapter{Achieved Results}\label{chap:results}
