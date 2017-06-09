@@ -22,7 +22,7 @@ In the following sections, we will first look into hardware constructs which giv
 
 In order to understand certain characteristics of relaxed memory models, it is useful to know what hardware constructs give rise to memory relaxation and why they are used.
 
-As the memory is significantly slower that the CPU, the CPU contains cache memories which can store part of the information in the main memory in the way which makes the access faster \cite{TODO}. In modern CPUs, there are usually multiple levels of cache memory, often two or three, some of which are local to a CPU core and some might be shared among several cores of the CPU \cite{TODO}. If multiple threads work with the same memory it is important they have a consistent view of the memory, even if the values are cached in different caches. To achieve this cache consistency, CPUs employ cache coherence protocols and memory relaxations arise from optimizations of these protocols \cite{hw-view-for-sw-hackers}.
+As the memory is significantly slower that the CPU, the CPU contains cache memories which can store part of the information in the main memory in the way which makes the access faster \cite{TODO}. In modern CPUs, there are usually multiple levels of cache memory, often two or three, some of which are local to a CPU core and some might be shared among several cores of the CPU \cite{TODO}. If multiple threads work with the same memory it is important they have a consistent view of the memory, even if the values are cached in different caches. To achieve this cache consistency, CPUs employ cache coherence protocols and memory relaxations arise from optimizations of these protocols \cite{hw_view_for_sw_hackers}.
 
 \TODO{…}
 
@@ -90,18 +90,57 @@ No *out of thin air* values
 
 This classification now allows us to decide the validity of an execution under a given memory model: we must classify ordering between actions of this execution and check that these relations follow the three constraints mentioned above.
 
+\TODO{\loc{}}
+
 ## Operational Semantics
+
+The operational semantics describes behavior of a program in terms of its run on an abstract machine. \TODO{…}
 
 
 # Theorectical Memory Models {#sec:models}
 
+In this section we will describe commonly used theoretical memory models using the frameworks described in \autoref{sec:semantics}. \TODO{While the hardware which implements similar memory models usually includes fences and atomic instructions, these are often omitted in the theoretical considerations.}
+
 ## Sequential Consistency {#sec:sc}
+
+Under sequential consistency all memory actions are immediately globally visible. That is, in the axiomatic description it holds that $\rel{ppo} = \rel{po}$ and $\rel{grf} = \rel{rf}$. Furthermore, there are no fences as SC has no need for them. In the operational semantics, this corresponds to machine without any caches and buffers, that is every write is immediately propagated to the memory and every read reads directly from the memory. This is the most intuitive and strongest memory model and it is often used by program analysers, but it is not used in most modern hardware.
 
 ## Total Store Order {#sec:tso}
 
+Total store order (TSO) allows reordering of writes with following reads originating from the same thread that access different memory locations, i.e. it relaxes $w \rel{po} r$ pairs where $\loc{w} \neq \loc{r}$. Also, the thread that invokes a read can read value from a program-order-preceding write even if this write is not globally visible yet (that is \rel{rfi} is not subset of \rel{grf}).
+
+Operational semantics can be described by a machine which has an unbounded processor-local FIFO store buffer in each processor. A write is first stored into the store buffer; if a read occurs a processor first consults its local store buffer and it it contains an entry for the loaded address it reads newest such entry. If there is no entry in the local store buffer, the value is read from the memory. An any point the oldest value from the store buffer can be removed from the buffer and stored to the memory. This way the writes in the store buffer are visible only to the processor which issued them until they are (non-deterministically) flushed to the memory.
+
+Machines which implement TSO-like memory models will usually provide memory barriers which either flush the store buffer, or \TODO{…} \cite{hw_view_for_sw_hackers}.
+
+An example of TSO-allows run which is not allowed under SC can be found in \autoref{fig:tso}.
+
+\begin{figure}[tp]
+\caption{}
+\label{fig:tso}
+\end{figure}
+
 ## Partial Store Order {#sec:pso}
 
+Partial store order (PSO) is similar to TSO, but it also allows reordering of pairs of writes which do not access the same memory location ($w_1 \rel{po} w_2$ pairs). Operationally, it can be implemented using a machine which has separate FIFO store buffer for each memory location. Again, processor can read from its local store buffers, but values saved in these buffers are invisible for other processors \cite{sparcmanual}. PSO hardware will often include barriers both for restoration of TSO and SC \cite{TODO}.
+
+An example for PSO-allowed run which is not TSO-allowed can be found in \autoref{fig:pso}.
+
+\begin{figure}[tp]
+\caption{}
+\label{fig:pso}
+\end{figure}
+
 ## Relaxed Memory Model {#sec:rmo}
+
+The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs of memory operations to be reordering provided they don't access the same memory location. That is, $\rel{po} = \rel{po-loc}$ except for cases when atomic instructions or fences are used. Furthermore, as reads can be reordered, \rel{rfe} is not fully included in \rel{grf} which is demonstrated by the example in \autoref{fig:rmo}.
+
+Operational semantics \TODO{…}.
+
+\begin{figure}[tp]
+\caption{}
+\label{fig:rmo}
+\end{figure}
 
 # Memory Models of Hardware Architectures {#sec:hwmodels}
 
