@@ -1,10 +1,6 @@
 @Inbook{Alglave2013,
-    author="Alglave, Jade
-        and Kroening, Daniel
-        and Nimal, Vincent
-        and Tautschnig, Michael",
-    editor="Felleisen, Matthias
-        and Gardner, Philippa",
+    author="Alglave, Jade and Kroening, Daniel and Nimal, Vincent and Tautschnig, Michael",
+    editor="Felleisen, Matthias and Gardner, Philippa",
     title="Software Verification for Weak Memory via Program Transformation",
     bookTitle="Programming Languages and Systems: 22nd European Symposium on Programming, ESOP 2013, Held as Part of the European Joint Conferences on Theory and Practice of Software, ETAPS 2013, Rome, Italy, March 16-24, 2013. Proceedings",
     year="2013",
@@ -17,8 +13,30 @@
     _read=1,
     _tags="memory model",
     _related_raw="[3,7] write atomicity relaxation, 6 RMO, 2 TSO sound and complete procedure, [4,5] axiomatic model and stability",
+    _related="alglave_fences memory model description",
     _summary="Transformation for adding memory models (parametrized from TSO to POWER) to goto-programs together with optimization of the number of delays."
 }
+
+@Inbook{alglave_fences,
+    author="Alglave, Jade and Maranget, Luc and Sarkar, Susmit and Sewell, Peter",
+    editor="Touili, Tayssir and Cook, Byron and Jackson, Paul",
+    title="Fences in Weak Memory Models",
+    bookTitle="Computer Aided Verification: 22nd International Conference, CAV
+        2010, Edinburgh, UK, July 15-19, 2010. Proceedings",
+    year="2010",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="258--272",
+    isbn="978-3-642-14295-6",
+    doi="10.1007/978-3-642-14295-6_25",
+    url="http://dx.doi.org/10.1007/978-3-642-14295-6_25",
+    _read=1,
+    _tags="memory model",
+    _related_raw="[3] shared memory intro, [4] POWER, [10], [11] verifying memory coherence, [19] Java memory model + thin air, [23], [25] operational model, [26] axiomatic model",
+    _summary="Axiomatic description of memory models and recovering of stronger
+        model from weaker using fences."
+}
+
 
 @inproceedings{Atig2010WMComplexity,
 	author = {Atig, Mohamed Faouzi and Bouajjani, Ahmed and Burckhardt, Sebastian and Musuvathi, Madanlal},
@@ -86,9 +104,58 @@
         correspond to some SC trace), to multiple SC reachability queries in
         instrumented program (which has limited buffering in one thered). The
         reduction requires O(n^2) queries and requires that all pairs of loads
-        and stores for given thread are enumerated.
+        and stores for given thread are enumerated."
 }
 
+@inproceedings{cppmemmod,
+    author = {Batty, Mark and Owens, Scott and Sarkar, Susmit and Sewell, Peter and Weber, Tjark},
+    title = {Mathematizing C++ Concurrency},
+    booktitle = {Proceedings of the 38th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+    series = {POPL '11},
+    year = {2011},
+    isbn = {978-1-4503-0490-0},
+    location = {Austin, Texas, USA},
+    pages = {55--66},
+    numpages = {12},
+    url = {http://doi.acm.org/10.1145/1926385.1926394},
+    doi = {10.1145/1926385.1926394},
+    acmid = {1926394},
+    publisher = {ACM},
+    address = {New York, NY, USA},
+    keywords = {relaxed memory models, semantics},
+    _read=1,
+    _summary="Axiomatic description of C++ memory model, with some divergencies from the standard draft N3092 (final is ??).",
+} 
+
+@article{x86tso,
+    author = {Sewell, Peter and Sarkar, Susmit and Owens, Scott and Nardelli, Francesco Zappa and Myreen, Magnus O.},
+    title = {X86-TSO: A Rigorous and Usable Programmer's Model for x86 Multiprocessors},
+    journal = {Commun. ACM},
+    issue_date = {July 2010},
+    volume = {53},
+    number = {7},
+    month = jul,
+    year = {2010},
+    issn = {0001-0782},
+    pages = {89--97},
+    numpages = {9},
+    url = {http://doi.acm.org/10.1145/1785414.1785443},
+    doi = {10.1145/1785414.1785443},
+    acmid = {1785443},
+    publisher = {ACM},
+    address = {New York, NY, USA},
+    _read=1,
+    _summary="Description of the x86 memory model, formalized in HOL4 and as an
+        abstract machine. Also discusses problems with informal specification.",
+    _related_raw="[9] Causal memory, [33] program transformations in java vs. memory model"
+} 
+
+@article{hw_view_for_sw_hackers,
+    title={Memory barriers: a hardware view for software hackers},
+    author={Paul E McKenney},
+    journal={Linux Technology Center, IBM Beaverton},
+    year={2010},
+}
 
 
 
@@ -113,7 +180,7 @@
     url="http://dx.doi.org/10.1007/978-3-319-08587-6_15",
     _read=1,
     _tools="AProVE",
-    _related_raw="9, 22 separation logic, 4 5 AProVE", 24 ARMC, 1 COSTA, 7 Cyclist, 29 FuncTion, 25 Julia, 12 KITTeL, 28 LoopFrog, 16 TAN, 14 TRex, 6 T2, 15 Ultimate",
+    _related_raw="9, 22 separation logic, 4 5 AProVE, 24 ARMC, 1 COSTA, 7 Cyclist, 29 FuncTion, 25 Julia, 12 KITTeL, 28 LoopFrog, 16 TAN, 14 TRex, 6 T2, 15 Ultimate",
     _summary = "termination analysis by encoding single nonrecursive LLVM function into integer transition system, uses separation logic"
 }
 
@@ -157,5 +224,5 @@
     address = {New York, NY, USA},
     keywords = {partial-order reduction, software model checking},
     _read=1,
-    _summary = "dynamic computation of partial order, however, it still 
+    _summary = "dynamic computation of partial order"
 } 
