@@ -36,9 +36,9 @@ Two main options are used for the description of memory model semantics, an axio
 
 ## Axiomatic Semantics
 
-The axiomatic semantics of memory models builds on relations between various (memory related) actions of the program and properties of these relations. We will mostly use the framework presented in \cite{alglave-fences} which classifies several dependency relations (some of which are memory model dependent) and for each memory model, a union of some of these relations needs to be acyclic.
+The axiomatic semantics of memory models builds on relations between various (memory related) actions of the program and properties of these relations. We will mostly use the framework presented in \cite{alglave_fences} which classifies several dependency relations (some of which are memory model dependent) and for each memory model, a union of some of these relations needs to be acyclic.
 
-Following \cite{alglave-fences} we now introduce relations between memory operations. All these relations are partial orders. We will denote reads by $r$ ($r_1, r_2, …$), writes by $w$ ($w_1, w_2, …$), and arbitrary memory operations by $m$ ($m_1, m_2…$). A read or write can also be part of atomic read-modify-write operation.
+Following \cite{alglave_fences} we now introduce relations between memory operations. All these relations are partial orders. We will denote reads by $r$ ($r_1, r_2, …$), writes by $w$ ($w_1, w_2, …$), and arbitrary memory operations by $m$ ($m_1, m_2…$). A read or write can also be part of atomic read-modify-write operation.
 
 Program order
 ~   $m_1 \rel{po} m_2$, is a total order of actions performed by one processor (or thread). It never relates actions from different threads. Some instructions might consist of multiple memory accesses which are ordered according to their intra-instruction dependencies (e.g. the `lock xadd` `x86` instruction performs first a read and then a write that are ordered by \rel{po} \cite{x86tso}).
@@ -144,13 +144,21 @@ Operational semantics \TODO{…}.
 
 # Memory Models of Hardware Architectures {#sec:hwmodels}
 
-## AMD64
+In this section, we will describe memory models used by common hardware architectures and relate them to the theoretical memory models from \autoref{sec:models}
+
+## `x86` and `x86-64`
+
+The memory model used by `x86` and `x86-64` processors is very similar to \hyperref[sec:tso]{TSO} with additional fences and atomic instructions. The memory model is described informally in Intel and AMD specification documents \cite{TODO, TODO}. Formal semantics derived from these documents and experimental evaluation was given in \cite{x86tso} in form of the `x86`-TSO memory model. The semantics of `x86`-TSO is formalized in HOL4 model and in as an abstract machine. The abstract machine is rather simple, each processor core is connected to a local FIFO store buffer, to the memory, and to a memory lock (which is used for atomic instructions). Writes write to the store buffer, reads read either from the newest entry in the store buffer (if such exists) or from the memory.
+
+On top of stores and loads which behave as under the TSO memory model, `x86` has three fence instructions (`MFENCE`, `SFENCE`, and `LFENCE`). Of these, `SFENCE` and `LFENCE` exist only for ordering of special instructions and are no-ops under `x86`-TSO. `MFENCE` is a full memory barrier and it ensures that all writes performed on the same code before `MFENCE` are visible to the other processors (i.e. it flushes the local store buffer). Furthermore, `x86` has a family of read-modify-write instructions (with the `LOCK` prefix, e.g. `LOCK XADD` for locked fetch-and-add) and a compare exchange instruction (`CMPXCHG`). These instructions behave as if a memory lock was acquired before the operation, then the operation is performed, store buffers are flushed, and lock is released.
 
 ## ARM
 
 ## Power
 
 # Memory Models of Programming Languages {#sec:langs}
+
+Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs. In general, most programming languages give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior \TODO{tohle by chtělo nějak podložit}.
 
 ## C and C++
 
