@@ -23,16 +23,8 @@ thesis-print.tex : thesis.tex
 
 .PRECIOUS: %.bcf %.bbl
 
-%.tex : %.md
-	pandoc $< -o $@
-	sed -i $@ -re 's/ \\cite/~\\cite/' \
-		-e 's/^\\section\{@FIG:([^\}]*)\}.*$$/\\begin{figure}[\1]/' \
-		-e 's/^\\section\{@eFIG\}.*$$/\\end{figure}/' \
-		-e 's/\\begCaption/\\caption{/' -e 's/\\endCaption/\}/' \
-		-e 's/\\begFigure/\\begin{figure}/' -e 's/\\endFigure/\\end{figure}/' \
-		-e 's/\\begSplit/\\begin{minipage}[t]{0.48\\textwidth}/' \
-		-e 's/\\Split/\\end{minipage}\\hfill\\begin{minipage}[t]{0.48\\textwidth}/' \
-		-e 's/\\endSplit/\\end{minipage}/'
+%.tex : %.md md2tex.pl Makefile
+	perl -- md2tex.pl -f markdown -t latex < $< > $@
 
 exvis.ll : exvis.cpp
 	clang++ -std=c++14 -S -emit-llvm $< -O2
