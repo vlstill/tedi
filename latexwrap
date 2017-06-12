@@ -50,7 +50,7 @@ for i in $(seq 1 $N); do
         
         if [[ $rerun != 1 ]]; then
             echo " done"
-            fgrep -i 'warning' $LOG
+            egrep -i '(warning|overfull|undefull|badness)' $LOG
             exit 0
         fi
     else
