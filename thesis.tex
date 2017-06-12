@@ -154,6 +154,10 @@
 
 \setlength{\overfullrule}{5pt} % TODO: remove
 
+% try to avoid overfull lines, taken from \sloppy, but without allowing greater
+% tolerance for paragraphs without any problems
+\emergencystretch 3em
+
 \begin{document}
 
 % initial pages from Mornfall + modifications
