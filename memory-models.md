@@ -158,9 +158,45 @@ On top of stores and loads which behave as under the TSO memory model, `x86` has
 
 # Memory Models of Programming Languages {#sec:langs}
 
-Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs. In general, most programming languages give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior \TODO{tohle by chtělo nějak podložit}.
+Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs. In general, most programming languages give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior \TODO{tohle by chtělo nějak podložit}. On top of that, some programming languages, such as C, C++, and \TODO{?Java?} provide support for atomic operations which can be used for synchronization without locks in the platform they are running on supports it. C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
 
 ## C and C++
+
+In C and C++ prior to 2011 standards there was no support for threads and shared memory parallelism in the language. Therefore creators of parallel programs were dependent on platform and compiler specific libraries and primitives, e.g. the `pthread` library for threading and `__sync_*` family of functions for atomic operations in the GCC compiler.
+
+The C++11 and C11 standards introduced support for threading and atomic operations to these languages. From the point of relaxed memory models, the interesting part of this is the support for atomic operations. From now on, we will refer only to C++ and all examples will use C++ syntax, nevertheless, the C versions work the same (but the syntax can differ).
+
+C++ provides atomic variables (using the templated class `std::atomic`{.cpp}, e.g. `std::atomic< int >`{.cpp}). These variables can be used as normal variables, except that load from and stores to such variables are guaranteed to be sequentially consistent. Furthermore, for integral types, operations such as increment and decrement are also guaranteed to be performed atomically. Sequentially consistent atomic also guarantee that other memory actions will not be reordered across them and therefore they can be used for synchronization and guarding other (non-atomic) accesses.
+
+As C++ is designed for high performance uses and not all parallel algorithms need sequential consistency, C++ has support for lower level atomic operations with more relaxed ordering. These operations are executed by invoking appropriate member functions of the atomic object and can contain additional parameter which specifies their ordering. Both sequentially consistent and lower-level atomics are shown in \autoref{fig:cppatomic}.
+
+There are six memory orders in C++, namely *sequentially consistent*, *acquire-release*, *release*, *acquire*, *consume*, and *relaxed*. \TODO{…}.
+
+C++ has also support for memory fences which also take memory order argument. These memory fences can be used to strengthen synchronization guarantee among atomic operations (they are not required to give any guarantees if only non-atomic operations are used).
+
+The C++ memory model is not formalized in C++11 standard, an attempt to formalize it was given in \cite{cppmemmod}, formalizing the N3092 draft of the standard \cite{N3092}. While this formalization precedes the final C++11 standard, it seems[^cppmemmodvs11] that there were no changes in the specification of atomic operations after N3092. Nevertheless, there are some differences between the formalization and N3092 (which are justified in the paper).
+
+[^cppmemmodvs11]: \TODO{According to the clang compiler's C++ status page \cite{clangstatus} the documents defining semantics of C++ memory model and atomic instructions precede the N3092 draft.}
+
+\begin{figure}[tp]
+
+```{.cpp .numberLines}
+std::atomic< int > x; // declaration an atomic variable
+int y = 0; // non-atomic variable and store
+x = 42; // sequentially consistent store
+x.store( 16, std::memory_order_seq_cst );
+x.store( 0, std::memory_order_relaxed );
+y = 1;
+x.store( 1, std::memory_order_release );
+x += 4; // sequentially consistent
+x.fetch_add( 4, std::memory_order_seq_cst );
+```
+
+\begin{caption}
+Line 4 show explicit sequentially consistent store, line 5 show relaxed store. Line 6 contains non-atomic store which is ordered using release store on line 7. Lines 8 and 9 show two alternatives for executing the atomic fetch and add instruction.
+\end{caption}
+\label{fig:cppatomic}
+\end{figure}
 
 ## Java
 
