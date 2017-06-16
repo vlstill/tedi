@@ -19,6 +19,8 @@ In this situation, we believe that study of memory relaxations all the way from 
 
 [^proglang]: By *programming language* we understand higher-level languages in which code is mostly written by humans (e.g. C, C++, and Java) and distinguish them from *assembly languages* which use platform-specific instructions and syntax, and from *intermediate languages* which are used in some compilers mainly for platform-independent optimizations (e.g. LLVM IR).
 
+*   \TODO{obecný popis memory modelů + nastínit cíle + motivace}
+
 \bigskip
 
 The rest of this work is structured as follows: the \autoref{chap:rmos} describes hardware constructs which give rise to relaxed memory, different memory models used to describe these relaxations, and connection to programming languages. \autoref{chap:verification} describes analysis and verification techniques for relaxed memory. These two chapters together give an overview of the state-of-the-art. \autoref{chap:results} then describes my research results, including results not related to relaxed memory. Finally, \autoref{chap:aim} presents aims of my future work and \autoref{chap:conclusion} concludes this work.
