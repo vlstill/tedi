@@ -96,8 +96,8 @@ The notion of out of thin air reads was \TODO{probably} introduced by the Java m
 
 \begin{figure}[tp]
 
-\begin{threads}{2}
-\begin{thread}{Thread 1}
+\begin{threads}{3}
+\begin{thread}
 
 ```{.cpp}
 r1 = x; // a
@@ -105,13 +105,26 @@ y = r1; // b
 ```
 
 \end{thread}
-\begin{thread}{Thread 2}
+\begin{thread}
 
 ```{.cpp}
 r2 = y; // c
 x = r2; // d
 ```
 
+\end{thread}
+\begin{thread}
+\begin{tikzpicture}[semithick]
+    \node (a) {\texttt{a}};
+    \node[below = of a] (b) {\texttt{b}};
+    \node[right = of a] (c) {\texttt{c}};
+    \node[below = of c] (d) {\texttt{d}};
+
+    \drawrel{a}{b}{dp};
+    \drawrel[right]{c}{d}{dp};
+    \drawrel{d}{a}{rf};
+    \drawrel[right]{b}{c}{rf};
+\end{tikzpicture}
 \end{thread}
 \end{threads}
 
@@ -128,26 +141,39 @@ Sadly, there seems to be no widely agreed-upon definition of out of thin air rea
 
 \begin{figure}[tp]
 
-\begin{threads}{2}
-\begin{thread}{Thread 1}
+\begin{threads}{3}
+\begin{thread}
 
 ```{.cpp}
-r1 = x;         // a
+r1 = x;        // a
 if ( r1 == 1 )
-    y = r1;     // b
+    y = r1;    // b
 ```
 
 \end{thread}
-\begin{thread}{Thread 2}
+\begin{thread}
 
 ```{.cpp}
-r2 = y;         // c
+r2 = y;        // c
 if ( r2 == 1 )
-    x = 1;      // d1
+    x = 1;     // d1
 else
-    x = 1;      // d2
+    x = 1;     // d2
 ```
 
+\end{thread}
+\begin{thread}
+\begin{tikzpicture}[semithick]
+    \node (a) {\texttt{a}};
+    \node[below = of a] (b) {\texttt{b}};
+    \node[right = 4em of a] (c) {\texttt{c}};
+    \node[below = of c] (d) {\texttt{d1} + \texttt{d2}};
+
+    \drawrel{a}{b}{dp};
+    \drawrelgray[right]{c}{d}{po};
+    \drawrel{d}{a}{rf};
+    \drawrel[right]{b}{c}{rf};
+\end{tikzpicture}
 \end{thread}
 \end{threads}
 
@@ -155,7 +181,7 @@ else
 Reachable `r1 == 1 && r2 == 1`?
 
 \begin{caption}
-Example of program which exhibits thin air reads if we consider them to be defined by syntactical dependency, but not if we consider them defined by semantical dependency (as statements `d1` and `d2` can be merged and their `if` removed which allows reordering of `c` with merged `d1 + d2`).
+Example of program which exhibits thin air reads if we consider them to be defined by syntactical dependency, but not if we consider them defined by semantical dependency (as statements `d1` and `d2` can be merged and their `if` removed which allows reordering of `c` with merged `d1` + `d2`). Note that \rel{po} is considered not to be preserved by the memory model, therefore it is gray.
 \end{caption}
 \label{fig:thin:deps}
 \end{figure}
@@ -187,10 +213,48 @@ Operational semantics can be described by a machine which has an unbounded proce
 
 Machines which implement TSO-like memory models will usually provide memory barriers which either flush the store buffer, or \TODO{…} \cite{hw_view_for_sw_hackers}.
 
-An example of TSO-allows run which is not allowed under SC can be found in \autoref{fig:tso}.
+An example of TSO-allowed run which is not allowed under SC can be found in \autoref{fig:tso}.
 
 \begin{figure}[tp]
-\caption{}
+\begin{threads}{3}
+
+\begin{thread}
+
+```{.cpp}
+x = 1;  // a
+r1 = y; // b
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+y = 1;  // c
+r2 = x; // d
+```
+
+\end{thread}
+\begin{thread}
+\begin{tikzpicture}[semithick, minimum height = 1.7em]
+    \node (ix) {init \texttt{x}};
+    \node[right = of ix] (iy) {init \texttt{y}};
+    \node[below = 0.5em of ix](a) {\texttt{a}};
+    \node[below = 1em of a] (b) {\texttt{b}};
+    \node[below = 0.5em of iy] (c) {\texttt{c}};
+    \node[below = 1em of c] (d) {\texttt{d}};
+
+    \drawrelgray{a}{b}{po};
+    \drawrelgray[right]{c}{d}{po};
+    \drawrel{b}{iy}{rf};
+    \drawrel[right]{d}{ix}{rf};
+\end{tikzpicture}
+\end{thread}
+\end{threads}
+
+\noindent Reachable `r1 == 0 && r2 == 0`?
+\begin{caption}
+This code demonstrates behavior which is allowed under TSO but is not allowed under SC. Suppose the following run of the program: first `x = 1` is executed, but the store is buffered and does not reach memory yet. Then `r1 = y` is executed, reading value 0 from `y`. Then the second thread is executed fully, and since the update of `x` was not yet propagated to the memory it reads 0 from `x`. Finally, the update of `x` (by action `a`) is performed.
+\end{caption}
 \label{fig:tso}
 \end{figure}
 
@@ -201,7 +265,44 @@ Partial store order (PSO) is similar to TSO, but it also allows reordering of pa
 An example for PSO-allowed run which is not TSO-allowed can be found in \autoref{fig:pso}.
 
 \begin{figure}[tp]
-\caption{}
+\begin{threads}{3}
+\begin{thread}
+
+```{.cpp}
+x = 1; // a
+g = 1; // b
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+while (!g) {} // c
+r1 = x;       // d
+```
+
+\end{thread}
+\begin{thread}
+\begin{tikzpicture}[semithick, minimum height = 1.7em]
+    \node(a) {\texttt{a}};
+    \node[below = of a] (b) {\texttt{b}};
+    \node[right = of a] (c) {\texttt{c}};
+    \node[below = of c] (d) {\texttt{d}};
+    \node[right = 1.6em of c] (ix) {init \texttt{x}};
+
+    \drawrelgray{a}{b}{po};
+    \drawrel[right]{c}{d}{dp};
+    \drawrel[above right]{b}{c}{\ \;rf};
+    \drawrel[right]{ix}{d}{rf};
+    \drawrel[above left]{d}{a}{fr\ \,\,};
+\end{tikzpicture}
+\end{thread}
+\end{threads}
+
+\noindent Reachable `r1 == 0`?
+\begin{caption}
+This code demonstates behavior prohibited by TSO but allowed by PSO. In this case, the second thread waits for a guard `g` to be set and then attepts to read `x`. However, under PSO, writes to `x` and `g` can be reordered, resulting in action `d` reading from the initial value of `x`. Note that there is control flow dependency between `c` and `d`.
+\end{caption}
 \label{fig:pso}
 \end{figure}
 
@@ -212,7 +313,68 @@ The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs 
 Operational semantics \TODO{…}.
 
 \begin{figure}[tp]
-\caption{}
+\begin{threads}{4}
+\begin{thread}
+
+```{.cpp}
+x = 1; // a
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+y = 1; // b
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+r1 = x; // c
+r2 = y; // d
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+r3 = y; // e
+r4 = x; // f
+```
+
+\end{thread}
+\end{threads}
+
+\bigskip
+
+\noindent Reachable `r1 == 1 && r2 == 0 && r3 == 1 && r4 == 0`?
+
+\begin{tikzpicture}[semithick, minimum height = 1.7em]
+
+    \node (c) {\texttt{c}};
+    \node[above right = 1.5em of c] (a) {\texttt{a}};
+    \node[right = of a] (b) {\texttt{b}};
+    \node[below right = 1.5em of b] (e) {\texttt{e}};
+    \node[below = of c] (d) {\texttt{d}};
+    \node[below = of e] (f) {\texttt{f}};
+
+    \node[above right = of f] (ix) {init \texttt{x}};
+    \node[above left = of d] (iy) {init \texttt{y}};
+
+    \drawrelgray{c}{d}{po};
+    \drawrelgray{e}{f}{po};
+    \drawrel{iy}{d}{rf};
+    \drawrel[right]{ix}{f}{rf};
+    \drawrel{a}{c}{rf};
+    \drawrel[right]{b}{e}{rf};
+    \drawrel[right]{f}{a}{fr};
+    \drawrel{d}{b}{fr};
+\end{tikzpicture}
+
+\begin{caption}
+An example of behavior allowed by RMO, but not by TSO or PSO. There are 4 threads, two of them writting one of `x` and `y`. The remaining two threads read these variables, but observe their updates in inverted order (i.e. the third thread first reads new value of `x` and then old value of `y`, therefore it observes `x` first, but the last thread observes new value of `y` and then old value of `x`).
+\end{caption}
 \label{fig:rmo}
 \end{figure}
 
