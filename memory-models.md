@@ -30,7 +30,7 @@ As the memory is significantly slower that the CPU, the CPU contains cache memor
 
 # Description of Memory Model Semantics {#sec:semantics}
 
-As already noted, it is often the case that CPU architecture specifications or language specifications describe memory models in an informal way. This, however, can lead to imprecision when such specification is used for as a basis for a program, compiler or analyzer implementation. For this reason, it is useful to have formal semantics given to memory models.
+As already noted, it is often the case that CPU architecture specifications or language specifications describe memory models informally. This, however, can lead to imprecision when such specification is used for as a basis for a program, compiler or analyzer implementation. For this reason, it is useful to have formal semantics given to memory models.
 
 Two main options are used for the description of memory model semantics, an axiomatic semantics based on dependency relations between actions of the program \cite{TODO, TODO}, and operational semantics which describes working of an abstract machine which implements the given memory model \cite{TODO, TODO}.
 
@@ -89,6 +89,80 @@ No *out of thin air* values
 
 
 This classification now allows us to decide the validity of an execution under a given memory model: we must classify ordering between actions of this execution and check that these relations follow the three constraints mentioned above.
+
+### The Problem of Out of Thin Air Reads {#sec:thin}
+
+The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm}. The idea is that a value produced by a read must have been written to the given memory location and must not depend on itself. The motivation for their exclusion from Java is that out of thin air values could allow creating invalid pointers, effectively destroying memory safety guarantees of Java. See \autoref{fig:thin:naive} for example of out of thin air read.
+
+\begin{figure}[tp]
+
+\begin{threads}{2}
+\begin{thread}{Thread 1}
+
+```{.cpp}
+r1 = x; // a
+y = r1; // b
+```
+
+\end{thread}
+\begin{thread}{Thread 2}
+
+```{.cpp}
+r2 = y; // c
+x = r2; // d
+```
+
+\end{thread}
+\end{threads}
+
+\noindent
+Reachable `x == 1 && y == 1`?
+
+\begin{caption}
+An example of out of thin air reads -- suppose both `x` and `y` are initialized to 0, the question is if it is possible that at the end are both `x` and `y` equal to 1. Now if we disregarded the out of thin air condition, it would be possible to build execution where $a \rel{rf} d$ and $c \rel{rf} b$ allowing arbitrary value to appear in `x` and `y`. Therefore the goal configuration would be reachable (provided \rel{po} and \rel{dp} are not preserved).
+\end{caption}
+\label{fig:thin:naive}
+\end{figure}
+
+Sadly, there seems to be no widely agreed-upon definition of out of thin air reads\cite{relaxed_opt_semantics_no_thin}. Even in the aforementioned definition, the problem is that the dependency relation \rel{dp} is not clearly defined -- if it is \TODO{as usually} defined as syntactical dependency, that excluding thin air reads prohibits certain important optimizations. Indeed there are widely used optimizations for Java which are forbidden by its memory model \cite{TODO}. Furthermore, restricting the dependencies to semantic dependencies does not solve the problem efficiently as these are hard to compute and indeed are not properties of a single run of a program. In \autoref{fig:thin:deps}, it can be seen that while the write of `1` to `x` in the `then` branch of thread 2 is syntactically dependent on the load of `y`, it is not semantically dependent and indeed if the optimizer merged the two branches of the `if` and removed the `if` the write would become independent of the read.
+
+\begin{figure}[tp]
+
+\begin{threads}{2}
+\begin{thread}{Thread 1}
+
+```{.cpp}
+r1 = x;         // a
+if ( r1 == 1 )
+    y = r1;     // b
+```
+
+\end{thread}
+\begin{thread}{Thread 2}
+
+```{.cpp}
+r2 = y;         // c
+if ( r2 == 1 )
+    x = 1;      // d1
+else
+    x = 1;      // d2
+```
+
+\end{thread}
+\end{threads}
+
+\noindent
+Reachable `r1 == 1 && r2 == 1`?
+
+\begin{caption}
+Example of program which exhibits thin air reads if we consider them to be defined by syntactical dependency, but not if we consider them defined by semantical dependency (as statements `d1` and `d2` can be merged and their `if` removed which allows reordering of `c` with merged `d1 + d2`).
+\end{caption}
+\label{fig:thin:deps}
+\end{figure}
+
+For this reason, out of thin air reads are not prohibited by the C11 and C++11 standards while these standards also state that implementations should not exhibit such behavior (which is in agreement with current hardware which does not exhibit out thin air reads).
+
+An alternative semantics that aims at avoiding semantical out of thin air reads while allowing optimizations is provided in \cite{relaxed_opt_semantics_no_thin}. This semantics is based on event structures \cite{TODO} and therefore considers all runs of the program at once. For this reason it is not clear if it can be used for effective analysis of larger programs.
 
 \TODO{\loc{}}
 
@@ -200,7 +274,7 @@ Line 4 show explicit sequentially consistent store, line 5 show relaxed store. L
 
 ## Java
 
-## \llvm
+## LLVM
 
 # Memory Models and Compilers {#sec:compilers}
 

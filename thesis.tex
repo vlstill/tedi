@@ -158,6 +158,15 @@
 % tolerance for paragraphs without any problems
 \emergencystretch 3em
 
+\newenvironment{threads}[1]
+    {\def\threadwidth{\textwidth / #1}}
+    {}
+\newenvironment{thread}[1]
+    {\minipage[t]{0.95\threadwidth}
+        #1 \\ \hrule
+    }
+    {\endminipage}
+
 \begin{document}
 
 % initial pages from Mornfall + modifications
