@@ -92,7 +92,7 @@ This classification now allows us to decide the validity of an execution under a
 
 ### The Problem of Out of Thin Air Reads {#sec:thin}
 
-The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm}. The idea is that a value produced by a read must have been written to the given memory location and must not depend on itself. The motivation for their exclusion from Java is that out of thin air values could allow creating invalid pointers, effectively destroying memory safety guarantees of Java. See \autoref{fig:thin:naive} for example of out of thin air read.
+The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm_Gosling2005, javamm_popl_Manson2005}. The idea is that a value produced by a read must have been written to the given memory location and must not depend on itself. The motivation for their exclusion from Java is that out of thin air values could allow creating invalid pointers, effectively destroying memory safety guarantees of Java. See \autoref{fig:thin:naive} for example of out of thin air read.
 
 \begin{figure}[tp]
 
@@ -137,7 +137,7 @@ An example of out of thin air reads -- suppose both `x` and `y` are initialized 
 \label{fig:thin:naive}
 \end{figure}
 
-Sadly, there seems to be no widely agreed-upon definition of out of thin air reads\cite{relaxed_opt_semantics_no_thin}. Even in the aforementioned definition, the problem is that the dependency relation \rel{dp} is not clearly defined -- if it is \TODO{as usually} defined as syntactical dependency, that excluding thin air reads prohibits certain important optimizations. Indeed there are widely used optimizations for Java which are forbidden by its memory model \cite{TODO}. Furthermore, restricting the dependencies to semantic dependencies does not solve the problem efficiently as these are hard to compute and indeed are not properties of a single run of a program. In \autoref{fig:thin:deps}, it can be seen that while the write of `1` to `x` in the `then` branch of thread 2 is syntactically dependent on the load of `y`, it is not semantically dependent and indeed if the optimizer merged the two branches of the `if` and removed the `if` the write would become independent of the read.
+Sadly, there seems to be no widely agreed-upon definition of out of thin air reads \cite{relaxed_opt_semantics_no_thin}. Even in the aforementioned definition, the problem is that the dependency relation \rel{dp} is not clearly defined -- if it is \TODO{as usually} defined as syntactical dependency, that excluding thin air reads prohibits certain important optimizations. Indeed there are commonly used optimizations which are forbidden by the Java memory model \cite{Sevcik2008}. Furthermore, restricting the dependencies to semantic dependencies does not solve the problem efficiently as these are hard to compute and indeed are not properties of a single run of a program. In \autoref{fig:thin:deps}, it can be seen that while the write of `1` to `x` in the `then` branch of thread 2 is syntactically dependent on the load of `y`, it is not semantically dependent and indeed if the optimizer merged the two branches of the `if` and removed the `if` the write would become independent of the read.
 
 \begin{figure}[tp]
 
@@ -188,7 +188,7 @@ Example of program which exhibits thin air reads if we consider them to be defin
 
 For this reason, out of thin air reads are not prohibited by the C11 and C++11 standards while these standards also state that implementations should not exhibit such behavior (which is in agreement with current hardware which does not exhibit out thin air reads).
 
-An alternative semantics that aims at avoiding semantical out of thin air reads while allowing optimizations is provided in \cite{relaxed_opt_semantics_no_thin}. This semantics is based on event structures \cite{TODO} and therefore considers all runs of the program at once. For this reason it is not clear if it can be used for effective analysis of larger programs.
+An alternative semantics that aims at avoiding semantical out of thin air reads while allowing optimizations is provided in \cite{relaxed_opt_semantics_no_thin}. This semantics is based on event structures \cite{event_structures} and therefore considers all runs of the program at once. For this reason it is not clear if it can be used for effective analysis of larger programs.
 
 \TODO{\loc{}}
 
@@ -203,15 +203,15 @@ In this section we will describe commonly used theoretical memory models using t
 
 ## Sequential Consistency {#sec:sc}
 
-Under sequential consistency all memory actions are immediately globally visible. That is, in the axiomatic description it holds that $\rel{ppo} = \rel{po}$ and $\rel{grf} = \rel{rf}$. Furthermore, there are no fences as SC has no need for them. In the operational semantics, this corresponds to machine without any caches and buffers, that is every write is immediately propagated to the memory and every read reads directly from the memory. This is the most intuitive and strongest memory model and it is often used by program analysers, but it is not used in most modern hardware.
+Under sequential consistency all memory actions are immediately globally visible. That is, in the axiomatic description it holds that $\rel{ppo} = \rel{po}$ and $\rel{grf} = \rel{rf}$. Furthermore, there are no fences as SC has no need for them. In the operational semantics, this corresponds to machine without any caches and buffers where every write is immediately propagated to the memory and every read reads directly from the memory. This is the most intuitive and strongest memory model and it is often used by program analysers, but it is not used in most modern hardware. This memory model corresponds to the interleaving semantics of parallel programs.
 
 ## Total Store Order {#sec:tso}
 
-Total store order (TSO) allows reordering of writes with following reads originating from the same thread that access different memory locations, i.e. it relaxes $w \rel{po} r$ pairs where $\loc{w} \neq \loc{r}$. Also, the thread that invokes a read can read value from a program-order-preceding write even if this write is not globally visible yet (that is \rel{rfi} is not subset of \rel{grf}).
+Total store order (TSO) allows reordering of writes with following reads originating from the same thread that access different memory locations, i.e. it relaxes $w \rel{po} r$ pairs where $\loc{w} \neq \loc{r}$. Also, the thread that invokes a read can read value from a program-order-preceding write even if this write is not globally visible yet (that is \rel{rfi} is not subset of \rel{grf}) \cite{TODO}.
 
-Operational semantics can be described by a machine which has an unbounded processor-local FIFO store buffer in each processor. A write is first stored into the store buffer; if a read occurs a processor first consults its local store buffer and it it contains an entry for the loaded address it reads newest such entry. If there is no entry in the local store buffer, the value is read from the memory. An any point the oldest value from the store buffer can be removed from the buffer and stored to the memory. This way the writes in the store buffer are visible only to the processor which issued them until they are (non-deterministically) flushed to the memory.
+Operational semantics can be described by a machine which has an unbounded, processor-local FIFO store buffer in each processor. Writes are stored into the store buffer in the order in which they are executed. If a read occurs, a processor first consults its local store buffer and it it contains an entry for the loaded address it reads newest such entry. If there is no entry in the local store buffer, the value is read from the memory. An any point the oldest value from the store buffer can be removed from the buffer and stored to the memory. This way the writes in the store buffer are visible only to the processor which issued them until they are (non-deterministically) flushed to the memory \cite{TODO}.
 
-Machines which implement TSO-like memory models will usually provide memory barriers which either flush the store buffer, or \TODO{…} \cite{hw_view_for_sw_hackers}.
+Machines which implement TSO-like memory models will usually provide memory barriers which either flush the store buffer \cite{hw_view_for_sw_hackers, x86tso}. A prominent example of TSO-like hardware are `x86` and `x86-64` processors.
 
 An example of TSO-allowed run which is not allowed under SC can be found in \autoref{fig:tso}.
 
@@ -260,9 +260,9 @@ This code demonstrates behavior which is allowed under TSO but is not allowed un
 
 ## Partial Store Order {#sec:pso}
 
-Partial store order (PSO) is similar to TSO, but it also allows reordering of pairs of writes which do not access the same memory location ($w_1 \rel{po} w_2$ pairs). Operationally, it can be implemented using a machine which has separate FIFO store buffer for each memory location. Again, processor can read from its local store buffers, but values saved in these buffers are invisible for other processors \cite{sparcmanual}. PSO hardware will often include barriers both for restoration of TSO and SC \cite{TODO}.
+Partial store order (PSO) is similar to TSO, but it also allows reordering of pairs of writes which do not access the same memory location ($w_1 \rel{po} w_2$ pairs). Operational semantics corresponds to a machine which has separate FIFO store buffer for each memory location. Again, processor can read from its local store buffers, but values saved in these buffers are invisible for other processors \cite{sparcmanual}. PSO hardware will often include barriers both for restoration of TSO and SC \cite{TODO}.
 
-An example for PSO-allowed run which is not TSO-allowed can be found in \autoref{fig:pso}.
+An example for PSO-allowed run which is not TSO-allowed can be found in \autoref{fig:pso}. This memory model is supported for example by SPARC in PSO mode, but this is not a common architecture and configuration \cite{sparcmanual, hw_view_for_sw_hackers}. Therefore, this memory model is mostly important theoretically as reachability is decidable for it (see \autoref{sec:decidability}) and even incomplete analyses can be significantly simpler for PSO them for RMO.
 
 \begin{figure}[tp]
 \begin{threads}{3}
@@ -308,9 +308,7 @@ This code demonstates behavior prohibited by TSO but allowed by PSO. In this cas
 
 ## Relaxed Memory Model {#sec:rmo}
 
-The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs of memory operations to be reordering provided they don't access the same memory location. That is, $\rel{po} = \rel{po-loc}$ except for cases when atomic instructions or fences are used. Furthermore, as reads can be reordered, \rel{rfe} is not fully included in \rel{grf} which is demonstrated by the example in \autoref{fig:rmo}.
-
-Operational semantics \TODO{…}.
+The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs of memory operations to be reordering provided they don't access the same memory location. That is, $\rel{ppo} = \rel{po-loc}$ except for cases when atomic instructions or fences are used. Furthermore, as reads can be reordered, \rel{rfe} is not fully included in \rel{grf}. A relaxation not allowed under PSO but allowed under RMO is demonstrated by the example in \autoref{fig:rmo}.
 
 \begin{figure}[tp]
 \begin{threads}{4}
@@ -377,6 +375,10 @@ An example of behavior allowed by RMO, but not by TSO or PSO. There are 4 thread
 \end{caption}
 \label{fig:rmo}
 \end{figure}
+
+Operational semantics \TODO{…}.
+
+Examples of hardware architectures with RMO-like memory models are POWER and ARM (and also Alpha, which has even more relaxed memory model but is not used much any more) \cite{hw_view_for_sw_hackers}.
 
 # Memory Models of Hardware Architectures {#sec:hwmodels}
 

@@ -157,11 +157,131 @@
     year={2010},
 }
 
+@inproceedings{relaxed_opt_semantics_no_thin,
+    author = {Pichon-Pharabod, Jean and Sewell, Peter},
+    title = {A Concurrency Semantics for Relaxed Atomics That Permits Optimisation and Avoids Thin-air Executions},
+    booktitle = {Proceedings of the 43rd Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+    series = {POPL '16},
+    year = {2016},
+    isbn = {978-1-4503-3549-2},
+    location = {St. Petersburg, FL, USA},
+    pages = {622--633},
+    numpages = {12},
+    url = {http://doi.acm.org/10.1145/2837614.2837616},
+    doi = {10.1145/2837614.2837616},
+    acmid = {2837616},
+    publisher = {ACM},
+    address = {New York, NY, USA},
+    keywords = {C/C++, Concurrency, Relaxed memory models},
+    _read = 1,
+    _summary = "An alternative way of defining semantics for non-atomic and
+        relaxed atomic operations, aiming to both avoid thin air reads and
+        enable optimization. Targets C++. The semantics is based on event
+        structures and analyze all runs at the same time, considering possible
+        optimizations.",
+    _related = "event_structures, Sevcik2008 java memory model problems"
+} 
+
+@Inbook{event_structures,
+    author="Nielsen, Mogens
+        and Plotkin, Gordon
+        and Winskel, Glynn",
+    editor="Kahn, Gilles",
+    title="Petri nets, event structures and domains",
+    bookTitle="Semantics of Concurrent Computation: Proceedings of the
+        International Symposium, Evian, France, July 2--4, 1979",
+    year="1979",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="266--284",
+    isbn="978-3-540-35163-4",
+    doi="10.1007/BFb0022474",
+    url="http://dx.doi.org/10.1007/BFb0022474",
+    _read = 0
+}
+
+@Inbook{Sevcik2008,
+    author="{\v{S}}ev{\v{c}}{\'i}k, Jaroslav
+        and Aspinall, David",
+    editor="Vitek, Jan",
+    title="On Validity of Program Transformations in the Java Memory Model",
+    bookTitle="ECOOP 2008 -- Object-Oriented Programming: 22nd European
+        Conference Paphos, Cyprus, July 7-11, 2008 Proceedings",
+    year="2008",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="27--51",
+    isbn="978-3-540-70592-5",
+    doi="10.1007/978-3-540-70592-5_3",
+    url="http://dx.doi.org/10.1007/978-3-540-70592-5_3",
+    _read="0.2",
+    _related_raw = "[11][18] Java Memory Model, [20] JMM is fatally flawed,
+    [16][1][9][23] SC guarantees for DRF programs"
+}
+
+@book{javamm_Gosling2005,
+     author = {Gosling, James and Joy, Bill and Steele, Guy and Bracha, Gilad},
+     title = {The Java(TM) Language Specification (3rd Edition)},
+     year = {2005},
+     isbn = {0321246780},
+     publisher = {Addison-Wesley Professional},
+}
+
+@inproceedings{javamm_popl_Manson2005,
+    author = {Manson, Jeremy and Pugh, William and Adve, Sarita V.},
+    title = {The Java Memory Model},
+    booktitle = {Proceedings of the 32Nd ACM SIGPLAN-SIGACT Symposium on
+                 Principles of Programming Languages},
+    series = {POPL '05},
+    year = {2005},
+    isbn = {1-58113-830-X},
+    location = {Long Beach, California, USA},
+    pages = {378--391},
+    numpages = {14},
+    url = {http://doi.acm.org/10.1145/1040305.1040336},
+    doi = {10.1145/1040305.1040336},
+    acmid = {1040336},
+    publisher = {ACM},
+    address = {New York, NY, USA},
+    keywords = {Java, concurrency, memory model, multithreading},
+} 
 
 
+@article{post1946variant,
+    title={A variant of a recursively unsolvable problem},
+    author={Post, Emil L},
+    journal={Bulletin of the American Mathematical Society},
+    volume={52},
+    number={4},
+    pages={264--268},
+    year={1946}
+}
 
+@article{abdulla1996verifying,
+    title={Verifying programs with unreliable channels},
+    author={Abdulla, Parosh Aziz and Jonsson, Bengt},
+    journal={Information and Computation},
+    volume={127},
+    number={2},
+    pages={91--101},
+    year={1996},
+    publisher={Elsevier}
+}
 
-
+@article{abdulla1996undecidable,
+    title={Undecidable verification problems for programs with unreliable
+    channels},
+    author={Abdulla, Parosh Aziz and Jonsson, Bengt},
+    journal={Information and Computation},
+    volume={130},
+    number={1},
+    pages={71--90},
+    year={1996},
+    publisher={Elsevier},
+    _read="0.1",
+    _summary = "can be combined with [wmdecidability] to prove that LTL and CTL
+        model checking is undecidable for TSO"
+}
 
 
 
