@@ -32,9 +32,13 @@ The proofs use reduction from TSO/PSO reachability to lossy channel machine reac
 
 Due to the high complexity or undecidability of these problems, there are many approximative methods (see \autoref{sec:analysis:approx}) or methods which combine verification of adherence to sequential consistency with verification of absence of errors under sequential consistency (see \autoref{sec:analysis:adherence}). Furthermore, there are some methods which are precise for acyclic programs, but might not terminate or are only approximative in general \cite{Bouajjani2015, Alglave2013?}.
 
-
-
 # Verification of Adherence to Memory Model {#sec:analysis:adherence}
+
+As the reachability problem for programs under relaxed memory models is either very expensive to solve or undecidable, an alternative approach was proposed which builds on combination of analysis under sequential consistency with verification that no runs under the given relaxed memory model expose behavior not exposed under SC \cite{TODO}. The second part of this task is described by the \TODO{*robustness*} problem which, at least for some memory models, has significantly lower complexity than the reachability problem. For example, in the case of finite-state process the TSO robustness problem is in $\mathrm{PSPACE}$, the same complexity class as the SC reachability problem. Therefore, robustness based verification of finite state processes under TSO is in $\mathrm{PSPACE}$ which TSO reachability is non-elementary.
+
+However, the disadvantage of these techniques is that for correctness analysis of parallel programs they can vastly over-approximate possible errors as in practice it is often desirable to allow relaxed behavior provided it does not lead to an error.
+
+Examples of tools which perform these kinds of analyses are \TODO{…}
 
 # Precise Techniques {#sec:analysis:precise}
 

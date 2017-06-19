@@ -85,14 +85,13 @@ Memory coherence of each location must be respected
 ~   i.e. $\rel{po-loc} \cup \rel{rf} \cup \rel{ws} \cup \rel{fr}$ must be acyclic.
 
 No *out of thin air* values
-~   i.e. $\rel{rf} \cup \rel{dp}$ must be acyclic. \TODO{This means that …}, \TODO{some theoretical memory models do not follow this}
-
+~   i.e. $\rel{rf} \cup \rel{dp}$ must be acyclic. The idea behind this is that values cannot depend on themselves. However, while common hardware architectures do not exhibit thin air reads, some theoretical memory models allow them (e.g. the memory model of C++11). The larger discussion of the problem of thin air reads follows shortly.
 
 This classification now allows us to decide the validity of an execution under a given memory model: we must classify ordering between actions of this execution and check that these relations follow the three constraints mentioned above.
 
 ### The Problem of Out of Thin Air Reads {#sec:thin}
 
-The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm_Gosling2005, javamm_popl_Manson2005}. The idea is that a value produced by a read must have been written to the given memory location and must not depend on itself. The motivation for their exclusion from Java is that out of thin air values could allow creating invalid pointers, effectively destroying memory safety guarantees of Java. See \autoref{fig:thin:naive} for example of out of thin air read.
+The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm_Gosling2005, javamm_popl_Manson2005}. The idea is that a value produced by a read must not depend on itself. See \autoref{fig:thin:naive} for example of out of thin air read. The motivation for exclusion of thin air reads from Java is that they could allow creating invalid pointers, effectively destroying memory safety guarantees of Java. 
 
 \begin{figure}[tp]
 
@@ -132,7 +131,7 @@ x = r2; // d
 Reachable `x == 1 && y == 1`?
 
 \begin{caption}
-An example of out of thin air reads -- suppose both `x` and `y` are initialized to 0, the question is if it is possible that at the end are both `x` and `y` equal to 1. Now if we disregarded the out of thin air condition, it would be possible to build execution where $a \rel{rf} d$ and $c \rel{rf} b$ allowing arbitrary value to appear in `x` and `y`. Therefore the goal configuration would be reachable (provided \rel{po} and \rel{dp} are not preserved).
+An example of out of thin air reads -- suppose both `x` and `y` are initialized to 0, the question is if it is possible that at the end are both `x` and `y` equal to 1. Now if we disregarded the out of thin air condition, it would be possible to build execution where $a \rel{rf} d$ and $c \rel{rf} b$ allowing arbitrary value to appear in `x` and `y`. Therefore the goal configuration would be reachable (provided \rel{po} and \rel{dp} are not preserved). To our best knowledge, no common hardware architecture can have this behavior.
 \end{caption}
 \label{fig:thin:naive}
 \end{figure}
@@ -186,7 +185,9 @@ Example of program which exhibits thin air reads if we consider them to be defin
 \label{fig:thin:deps}
 \end{figure}
 
-For this reason, out of thin air reads are not prohibited by the C11 and C++11 standards while these standards also state that implementations should not exhibit such behavior (which is in agreement with current hardware which does not exhibit out thin air reads).
+This problem is especially important for programming languages because of optimizations which often do not preserve syntactic dependencies. On the level of assembly languages or machine code, syntactic dependencies usually coincide with notion of dependencies as seen by the processor. For this reason, the thin air condition is well justified and practical if reasoning about instructions, but not when reasoning about high level code in a programming language.
+
+For example, out of thin air reads are not prohibited by the C11 and C++11 standards even though these standards also state that implementations should not exhibit such behaviors (which is in agreement with current hardware which does not exhibit out thin air reads).
 
 An alternative semantics that aims at avoiding semantical out of thin air reads while allowing optimizations is provided in \cite{relaxed_opt_semantics_no_thin}. This semantics is based on event structures \cite{event_structures} and therefore considers all runs of the program at once. For this reason it is not clear if it can be used for effective analysis of larger programs.
 
@@ -442,7 +443,7 @@ Line 4 show explicit sequentially consistent store, line 5 show relaxed store. L
 
 # Memory Models and Compilers {#sec:compilers}
 
-## Adherence to Language Memory Models
+When analysing programs in high level programming languages (as opposed to analysing assembly level programs), there can be substantially more relaxation then allowed by the memory model of the hardware these programs target. The reason is that compilers are allowed to perform optimizations which reorder code or eliminate unnecessary memory accesses. This is allowed as program order for programs in languages such as is not a total order even if restricted to one thread. For example, two loads of of non-atomic variables in C++ with the same memory location can be merged or load which follows a store to the same memory location can be assumed to yield the stored value and therefore can be eliminated.
 
-## Optimizations
+These optimizations complicate analysis if they should be taken into account. \TODO{…}
 
