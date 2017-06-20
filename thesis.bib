@@ -104,8 +104,100 @@
         correspond to some SC trace), to multiple SC reachability queries in
         instrumented program (which has limited buffering in one thered). The
         reduction requires O(n^2) queries and requires that all pairs of loads
-        and stores for given thread are enumerated."
+        and stores for given thread are enumerated.",
+    _related_raw = "[3] DRF programs",
 }
+
+@Inbook{Burckhardt2008,
+    author="Burckhardt, Sebastian
+        and Musuvathi, Madanlal",
+    editor="Gupta, Aarti
+        and Malik, Sharad",
+    title="Effective Program Verification for Relaxed Memory Models",
+    bookTitle="Computer Aided Verification: 20th International Conference, CAV
+        2008 Princeton, NJ, USA, July 7-14, 2008 Proceedings",
+    year="2008",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="107--120",
+    isbn="978-3-540-70545-1",
+    doi="10.1007/978-3-540-70545-1_12",
+    url="http://dx.doi.org/10.1007/978-3-540-70545-1_12",
+    _todo="0.5",
+    _read="0.2",
+    _related_raw = "[18] SC, [24] TSO",
+    _summary = "detection of SC violations using a monitor with generalized
+        vector clock, tool Sober"
+}
+
+@Inbook{Burnim2011,
+    author="Burnim, Jabob
+        and Sen, Koushik
+        and Stergiou, Christos",
+    editor="Abdulla, Parosh Aziz
+        and Leino, K. Rustan M.",
+    title="Sound and Complete Monitoring of Sequential Consistency for Relaxed
+        Memory Models",
+    bookTitle="Tools and Algorithms for the Construction and Analysis of
+        Systems: 17th International Conference, TACAS 2011, Held as Part of the
+        Joint European Conferences on Theory and Practice of Software, ETAPS
+        2011, Saarbr{\"u}cken, Germany, March 26--April 3, 2011. Proceedings",
+    year="2011",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="11--25",
+    isbn="978-3-642-19835-9",
+    doi="10.1007/978-3-642-19835-9_3",
+    url="http://dx.doi.org/10.1007/978-3-642-19835-9_3",
+    _read="0.2",
+    _todo=1,
+    _summary="monitors for detecting violations of SC under TSO or PSO, using
+        operational semantics of TSO/PSO"
+}
+
+@Inbook{Alglave2011,
+    author="Alglave, Jade
+        and Maranget, Luc",
+    editor="Gopalakrishnan, Ganesh
+        and Qadeer, Shaz",
+    title="Stability in Weak Memory Models",
+    bookTitle="Computer Aided Verification: 23rd International Conference, CAV
+        2011, Snowbird, UT, USA, July 14-20, 2011. Proceedings",
+    year="2011",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="50--66",
+    isbn="978-3-642-22110-1",
+    doi="10.1007/978-3-642-22110-1_6",
+    url="http://dx.doi.org/10.1007/978-3-642-22110-1_6",
+    _related_raw="[3] DRF guarantee",
+    _summary = "notion of stability of executions from one memory model to a
+        weaker one, tool offence for inserting synchronization to x86 and POWER
+        assembly to ensure stability",
+    _read=1,
+}
+
+@ARTICLE{Holzmann1997,
+    author={G. J. Holzmann},
+    journal={IEEE Transactions on Software Engineering},
+    title={The model checker SPIN},
+    year={1997},
+    volume={23},
+    number={5},
+    pages={279-295},
+    keywords={distributed processing;formal specification;formal
+        verification;SPIN model checker;design error detection;detailed
+            code;distributed software system models;efficient verification
+            system;high-level distributed algorithm descriptions;telephone
+            exchange control;verifier design;verifier structure;Algorithm design
+            and analysis;Application software;Concurrent computing;Control
+            system synthesis;Design methodology;Distributed algorithms;Error
+            correction codes;Message passing;Software systems;Telephony},
+    doi={10.1109/32.588521},
+    ISSN={0098-5589},
+    month={May},}
+
+
 
 @inproceedings{cppmemmod,
     author = {Batty, Mark and Owens, Scott and Sarkar, Susmit and Sewell, Peter and Weber, Tjark},
