@@ -25,6 +25,7 @@ There is also some work on verifying whether a hardware implements a given memor
 ## Decidability and Complexity
 
 According to \cite{wmdecidability} the problem of state reachability in finite-state concurrent programs under relaxed memory models is decidable for TSO and PSO memory models, but not for RMO. The repeated reachability, which can be used as basis for verification of LTL properties, is not decidable even for TSO. Nevertheless, the complexity of the state reachability in these programs under TSO is non-primitive recursive.
+In \cite{Atig2012}, these decidability finding are further refined: a more relaxed decidable memory model, NSW (non-speculative writes) is identified, and stronger claim about undecidability is proven, showing that adding relaxation which allows reordering reads after subsequent writes to TSO brings undecidability. The NSW memory model contains all PSO behavior, additional relaxation which allows reordering reads with other reads, read-read and write-write barriers, and atomic instructions.
 
 The proofs in \cite{wmdecidability} use a very simple program model with finite state control unit and simple memory actions. Furthermore, they assume that the number of memory locations and processes is fixed and that the data domain is finite. On the other hand, in practice both valid memory locations and processes can be created during the run of the program (and even though there is an upper bound of their number, this upper bound is not practical for use in analysis).
 
@@ -32,7 +33,6 @@ The proofs use reduction from TSO/PSO reachability to lossy channel machine reac
 
 Due to the high complexity or undecidability of these problems, there are many approximative methods (see \autoref{sec:analysis:approx}) or methods which combine verification of adherence to sequential consistency with verification of absence of errors under sequential consistency (see \autoref{sec:analysis:adherence}). Furthermore, there are some methods which are precise for acyclic programs, but might not terminate or are only approximative in general \cite{Bouajjani2015, Alglave2013?}.
 
-*   \cite{Atig2012}
 
 # Verification of Absence of SC Violations {#sec:analysis:adherence}
 

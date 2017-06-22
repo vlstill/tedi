@@ -307,9 +307,9 @@ This code demonstates behavior prohibited by TSO but allowed by PSO. In this cas
 \label{fig:pso}
 \end{figure}
 
-## Relaxed Memory Model {#sec:rmo}
+## Non-Speculative Writes {#sec:nsw}
 
-The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs of memory operations to be reordering provided they don't access the same memory location. That is, $\rel{ppo} = \rel{po-loc}$ except for cases when atomic instructions or fences are used. Furthermore, as reads can be reordered, \rel{rfe} is not fully included in \rel{grf}. A relaxation not allowed under PSO but allowed under RMO is demonstrated by the example in \autoref{fig:rmo}.
+The non-speculative writes memory model was introduced in \cite{Atig2012} as a memory model which is more relaxed then PSO, but its reachability problem for finite state processes is decidable. It allows also reordering of reads with other reads and it is defined with read-read and write-write fences and atomic read-modify-write instructions. We show example of NSW behaviour which is not allowed by PSO in \autoref{fig:nsw}. This memory model is proven to not allow causal cycles.
 
 \begin{figure}[tp]
 \begin{threads}{4}
@@ -317,12 +317,7 @@ The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs 
 
 ```{.cpp}
 x = 1; // a
-```
-
-\end{thread}
-\begin{thread}
-
-```{.cpp}
+write_fence();
 y = 1; // b
 ```
 
@@ -352,6 +347,82 @@ r4 = x; // f
 \begin{tikzpicture}[semithick, minimum height = 1.7em]
 
     \node (c) {\texttt{c}};
+    \node[right = of c] (a) {\texttt{a}};
+    \node[below = of a] (b) {\texttt{b}};
+    \node[right = of a] (e) {\texttt{e}};
+    \node[below = of c] (d) {\texttt{d}};
+    \node[below = of e] (f) {\texttt{f}};
+
+    \node[above right = of f] (ix) {init \texttt{x}};
+    \node[above left = of d] (iy) {init \texttt{y}};
+    \drawrel{a}{b}{ab};
+    \drawrelgray[above left]{c}{d}{po};
+    \drawrelgray[above right]{e}{f}{po};
+    \drawrel{iy}{d}{rf};
+    \drawrel{ix}{f}{rf};
+    \drawrel[below]{a}{c}{rf};
+    \drawrel[above right]{b}{e}{\ \;rf};
+    \drawrel[above left]{f}{a}{fr\ \,\,};
+    \drawrel[above]{d}{b}{fr};
+\end{tikzpicture}
+
+\begin{caption}
+An example for behaviour allowed by NSW but not allowed by PSO (or TSO).
+While the two writes are well ordered, the corresponding reads are not and since the memory model relaxes read-read ordering they can observe values in different order.
+The write fence is not necessary, if it would not be present the two threads would still not be able to observe different results under PSO, but it is used to demonstrate that read reordering more clearly.
+\end{caption}
+\label{fig:nsw}
+\end{figure}
+
+The operation model for this memory model is defined in \cite{Atig2012} using two-level store buffers and memory history buffer for reordering reads.
+
+## Relaxed Memory Model {#sec:rmo}
+
+The relaxed memory model (RM\TODO{O}) further relaxes PSO by allowing all pairs of memory operations to be reordering provided they don't access the same memory location. That is, $\rel{ppo} = \rel{po-loc}$ except for cases when atomic instructions or fences are used. Furthermore, as reads can be reordered, \rel{rfe} is not fully included in \rel{grf}. A relaxation not allowed under PSO but allowed under RMO is demonstrated by the example in \autoref{fig:rmo}.
+
+\begin{figure}[tp]
+\begin{threads}{4}
+\begin{thread}
+
+```{.cpp}
+x = 1; // a
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+y = 1; // b
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+r1 = x; // c
+read_fence();
+r2 = y; // d
+```
+
+\end{thread}
+\begin{thread}
+
+```{.cpp}
+r3 = y; // e
+read_fence();
+r4 = x; // f
+```
+
+\end{thread}
+\end{threads}
+
+\bigskip
+
+\noindent Reachable `r1 == 1 && r2 == 0 && r3 == 1 && r4 == 0`?
+
+\begin{tikzpicture}[semithick, minimum height = 1.7em]
+
+    \node (c) {\texttt{c}};
     \node[above right = 1.5em of c] (a) {\texttt{a}};
     \node[right = of a] (b) {\texttt{b}};
     \node[below right = 1.5em of b] (e) {\texttt{e}};
@@ -361,8 +432,8 @@ r4 = x; // f
     \node[above right = of f] (ix) {init \texttt{x}};
     \node[above left = of d] (iy) {init \texttt{y}};
 
-    \drawrelgray{c}{d}{po};
-    \drawrelgray{e}{f}{po};
+    \drawrel{c}{d}{ab};
+    \drawrel{e}{f}{ab};
     \drawrel{iy}{d}{rf};
     \drawrel[right]{ix}{f}{rf};
     \drawrel{a}{c}{rf};
@@ -372,7 +443,10 @@ r4 = x; // f
 \end{tikzpicture}
 
 \begin{caption}
-An example of behavior allowed by RMO, but not by TSO or PSO. There are 4 threads, two of them writting one of `x` and `y`. The remaining two threads read these variables, but observe their updates in inverted order (i.e. the third thread first reads new value of `x` and then old value of `y`, therefore it observes `x` first, but the last thread observes new value of `y` and then old value of `x`).
+An example of behavior allowed by RMO, but not by TSO, PSO or NSW.
+There are 4 threads, two of them writing one of `x` and `y`.
+The remaining two threads read these variables, but observe their updates in inverted order (i.e. the third thread first reads new value of `x` and then old value of `y`, therefore it observes `x` first, but the last thread observes new value of `y` and then old value of `x`).
+Please note that the read fences do not help in this case, as the two writes happen in independent threads an therefore are not ordered in any way with respect to each other (the are used only to distinguish from NSW).
 \end{caption}
 \label{fig:rmo}
 \end{figure}
