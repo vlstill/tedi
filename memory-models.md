@@ -36,9 +36,9 @@ Two main options are used for the description of memory model semantics, an axio
 
 ## Axiomatic Semantics
 
-The axiomatic semantics of memory models builds on relations between various (memory related) actions of the program and properties of these relations. We will mostly use the framework presented in \cite{alglave_fences} which classifies several dependency relations (some of which are memory model dependent) and for each memory model, a union of some of these relations needs to be acyclic.
+The axiomatic semantics of memory models builds on relations between various (memory related) actions of the program and properties of these relations. We will mostly use the framework presented in \cite{Alglave2010_fences} which classifies several dependency relations (some of which are memory model dependent) and for each memory model, a union of some of these relations needs to be acyclic.
 
-Following \cite{alglave_fences} we now introduce relations between memory operations. All these relations are partial orders. We will denote reads by $r$ ($r_1, r_2, …$), writes by $w$ ($w_1, w_2, …$), and arbitrary memory operations by $m$ ($m_1, m_2…$). A read or write can also be part of atomic read-modify-write operation.
+Following \cite{Alglave2010_fences} we now introduce relations between memory operations. All these relations are partial orders. We will denote reads by $r$ ($r_1, r_2, …$), writes by $w$ ($w_1, w_2, …$), and arbitrary memory operations by $m$ ($m_1, m_2…$). A read or write can also be part of atomic read-modify-write operation.
 
 Program order
 ~   $m_1 \rel{po} m_2$, is a total order of actions performed by one processor (or thread). It never relates actions from different threads. Some instructions might consist of multiple memory accesses which are ordered according to their intra-instruction dependencies (e.g. the `lock xadd` `x86` instruction performs first a read and then a write that are ordered by \rel{po} \cite{x86tso}).

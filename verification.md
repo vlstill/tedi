@@ -32,6 +32,8 @@ The proofs use reduction from TSO/PSO reachability to lossy channel machine reac
 
 Due to the high complexity or undecidability of these problems, there are many approximative methods (see \autoref{sec:analysis:approx}) or methods which combine verification of adherence to sequential consistency with verification of absence of errors under sequential consistency (see \autoref{sec:analysis:adherence}). Furthermore, there are some methods which are precise for acyclic programs, but might not terminate or are only approximative in general \cite{Bouajjani2015, Alglave2013?}.
 
+*   \cite{Atig2012}
+
 # Verification of Absence of SC Violations {#sec:analysis:adherence}
 
 As the reachability problem for programs under relaxed memory models is either very expensive to solve or undecidable, an alternative approach was proposed which builds on combination of analysis under sequential consistency with a procedure which verifies that no runs under the given relaxed memory model expose behavior not exposed under SC \cite{Burckhardt2008}. The second part of this task is described by the robustness problem, which is explored under many names, e.g. \cite{Burckhardt2008} uses notion of TSO-safety, \cite{Bouajjani2013} uses notion of robustness, and \cite{Alglave2011} uses notion of stability. The advantage of this combination is that, at least for some memory models, it has significantly lower complexity than the reachability problem. For example, in the case of finite-state process the TSO robustness problem is in $\mathrm{PSPACE}$, the same complexity class as the SC reachability problem. Therefore, robustness based verification of finite state processes under TSO is in $\mathrm{PSPACE}$ which TSO reachability is non-elementary.
@@ -40,6 +42,21 @@ However, the disadvantage of these techniques is that for correctness analysis o
 
 The works \cite{Burckhardt2008, Burnim2011} build on detecting TSO (in the case of \cite{Burckhardt2008}, tools SOBER) or both TSO and PSO (\cite{Burnim2011}, tool THRILLE) violations by monitoring sequentially consistent executions of programs. A more general notion of stability (which relates two arbitrary memory models) is used in \cite{Alglave2011} which explores recovering of SC from `x86` or POWER memory model. The work also presents the tool \textsf{offence} which inserts synchronization into `x86` or POWER assembly to ensure stability. Another approach for detecting non-SC behaviour (under TSO) is presented in \cite{Bouajjani2013}. This approach uses a notion of *attacks*, a form of restricted out-of-order execution which witnesses SC violation. Authors also provide implementation in tool \textsc{Trencher} which uses SC model checker, Spin \cite{Holzmann1997}, as a backend for validation of attacks.
 
-# Precise Techniques {#sec:analysis:precise}
+# Fence Insertion Techniques
 
-# Approximative Techniques {#sec:analysis:approx}
+# Precise Verification Techniques {#sec:analysis:precise}
+
+*     \cite{Abdulla2012}
+
+# Approximative and Bug Finding Techniques {#sec:analysis:approx}
+
+There are many techniques for analysis of programs under relaxed memory models which fall into the category of bug finding tools -- such tools are unable to prove correctness in general, but they provide substantially better coverage of possible behaviors of parallel program then testing.
+
+*   \cite{Alglave2013} -- `x86`, POWER/ARM - parametrized, code transformation,
+    sound but not complete (buffer bounding, loop bounding (if using BMC),
+    probably not full RMO), general both in memory model and in tools used as
+    backend, Coq proof that operational semantics matches
+    \cite{Alglave2010_fences}. C/goto-programs.
+
+*   \cite{Bouajjani2015} -- introduces TSO lazily by iterative refinement, not
+    complete but should eventually find all errors. Based on robustness checker of \cite{Bouajjani2013}. Special language, tool \textsc{Trencher}.
