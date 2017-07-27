@@ -44,11 +44,11 @@ The works \cite{Burckhardt2008, Burnim2011} build on detecting TSO (in the case 
 
 # Fence Insertion Techniques
 
-# Precise Verification Techniques {#sec:analysis:precise}
 
-*     \cite{Abdulla2012}
+# Direct Analysis Technique
 
-# Approximative and Bug Finding Techniques {#sec:analysis:approx}
+*   Precise Verification Techniques {#sec:analysis:precise}
+*   Approximative and Bug Finding Techniques {#sec:analysis:approx}
 
 There are many techniques for analysis of programs under relaxed memory models which fall into the category of bug finding tools -- such tools are unable to prove correctness in general, but they provide substantially better coverage of possible behaviors of parallel program then testing.
 
@@ -59,4 +59,13 @@ There are many techniques for analysis of programs under relaxed memory models w
     \cite{Alglave2010_fences}. C/goto-programs.
 
 *   \cite{Bouajjani2015} -- introduces TSO lazily by iterative refinement, not
-    complete but should eventually find all errors. Based on robustness checker of \cite{Bouajjani2013}. Special language, tool \textsc{Trencher}.
+    complete but should eventually find all errors. Based on robustness checker
+    of \cite{Bouajjani2013}. Special language, tool \textsc{Trencher}.
+
+*     \cite{Abdulla2012} -- encoding of NSW to hierarchical store buffers +
+      history buffer, decidability proof without direct algorithm
+
+*   \cite{Linden2010} -- TSO, buffers represented by automata, without buffer
+    bounds, cycle iteration acceleration (for cycles involving changes in only one SB), uses sleep set POR which actually looks reasonable and aplicable to DIVINE due to crude definition of independence, verifies modified Promela, standalone implementation in Java. It is not clear if the algorithm is guaranteed to terminate.
+
+*   \cite{Atig2011} -- 

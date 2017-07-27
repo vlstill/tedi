@@ -455,6 +455,10 @@ Operational semantics \TODO{…}.
 
 Examples of hardware architectures with RMO-like memory models are POWER and ARM (and also Alpha, which has even more relaxed memory model but is not used much any more) \cite{hw_view_for_sw_hackers}.
 
+- \cite{Atig2012} semantics for NSW with two level store buffers and history
+  buffers for load reordering
+- \cite{Alglave2013} - RMO??
+
 # Memory Models of Hardware Architectures {#sec:hwmodels}
 
 In this section, we will describe memory models used by common hardware architectures and relate them to the theoretical memory models from \autoref{sec:models}
