@@ -68,4 +68,19 @@ There are many techniques for analysis of programs under relaxed memory models w
 *   \cite{Linden2010} -- TSO, buffers represented by automata, without buffer
     bounds, cycle iteration acceleration (for cycles involving changes in only one SB), uses sleep set POR which actually looks reasonable and aplicable to DIVINE due to crude definition of independence, verifies modified Promela, standalone implementation in Java. It is not clear if the algorithm is guaranteed to terminate.
 
-*   \cite{Atig2011} -- 
+*   \cite{Atig2011} -- Program transformation, instead of store buffers it uses
+    additional copies of shared variables (the used language distinguished shared and thread-local variables).
+    It is bounded not in the size of the buffers (which are not encoded) but in number of context switches (two versions: total number of context switches is bounded, number of contexts switches the values is delayed is bounded). The memory model is \TODO{TODO}.
+
+*   \cite{Park1995} -- Explores SPARC hierarchy of memory models (TSO, PSO,
+    RMO), modelled using encoding from assembly to Mur$\varphi$.
+    The encoding allows all reordering of instructions allowed by given memory model (modulo bounds).
+    Bounded in number of reorderings. Targeted add small synchronization primitives such as spin locks.
+
+*   \cite{Abdulla2017} -- Context bounded analysis for the POWER architecture, by transformation of program.
+    Uses nondeterminism heavily to guess result of sequence of instructions which is later checked.
+    CBMC is used as a backend.
+    It shows that context bounded analysis for POWER is decidable. 
+    Tool `power2sc`, compared with goto-instrument and niddhug.
+    Evaluation on C programs.
+    In a way extension of \cite{Atig2011}.
