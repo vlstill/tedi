@@ -84,3 +84,12 @@ There are many techniques for analysis of programs under relaxed memory models w
     Tool `power2sc`, compared with goto-instrument and niddhug.
     Evaluation on C programs.
     In a way extension of \cite{Atig2011}.
+
+*   \cite{Turon2014} -- Introduces a separation logic GPS which allows proving properties about programs using the (fragment of) C11 memory model.
+    The memory models is restricted to non-atomic, acquire-release, and sequentially consistent accesses -- i.e. it lacks support for relaxed and consume-release accesses.
+
+*   \cite{Dan2013} -- Presents an approach for verification of (potentially infinite state space) programs under TSO and PSO using predicate abstraction.
+    The paper first shows that it is not possible to use traditional predicate abstraction to produce boolean program and then verify this boolean program using weak memory semantics.
+    Instead, they propose a schema which first verifies the program under SC and then extrapolates predicates from SC run to verify a transformed version of the original program which has store buffers explicitly encoded.
+    The store buffers are bounded in this transformation.
+    Implementation in the tool \textsc{cupex} is also provided, as well as evaluation on 7 programs which shows advantages of their predicate extrapolation method.

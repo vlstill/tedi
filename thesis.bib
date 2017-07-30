@@ -450,7 +450,7 @@
     pages="99--115",
     isbn="978-3-642-22110-1",
     doi="10.1007/978-3-642-22110-1_9",
-    url="http://dx.doi.org/10.1007/978-3-642-22110-1_9"
+    _url="http://dx.doi.org/10.1007/978-3-642-22110-1_9"
 }
 
 @inproceedings{Park1995,
@@ -465,7 +465,7 @@
     location = {Santa Barbara, California, USA},
     pages = {34--41},
     numpages = {8},
-    url = {http://doi.acm.org/10.1145/215399.215413},
+    _url = {http://doi.acm.org/10.1145/215399.215413},
     doi = {10.1145/215399.215413},
     acmid = {215413},
     publisher = {ACM},
@@ -491,13 +491,70 @@ pages="56--74",
 abstract="We propose an under-approximate reachability analysis algorithm for programs running under the POWER memory model, in the spirit of the work on context-bounded analysis intitiated by Qadeer et al. in 2005 for detecting bugs in concurrent programs (supposed to be running under the classical SC model). To that end, we first introduce a new notion of context-bounding that is suitable for reasoning about computations under POWER, which generalizes the one defined by Atig et al. in 2011 for the TSO memory model. Then, we provide a polynomial size reduction of the context-bounded state reachability problem under POWER to the same problem under SC: Given an input concurrent program                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}{\$}{\$}                  , our method produces a concurrent program                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}'{\$}{\$}                   such that, for a fixed number of context switches, running                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}'{\$}{\$}                   under SC yields the same set of reachable states as running                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}{\$}{\$}                   under POWER. The generated program                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}'{\$}{\$}                   contains the same number of processes as                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}{\$}{\$}                  , and operates on the same data domain. By leveraging the standard model checker CBMC, we have implemented a prototype tool and applied it on a set of benchmarks, showing the feasibility of our approach.",
 isbn="978-3-662-54580-5",
 doi="10.1007/978-3-662-54580-5_4",
-url="https://doi.org/10.1007/978-3-662-54580-5_4",
+_url="https://doi.org/10.1007/978-3-662-54580-5_4",
 _read="0.5",
 _summary = "Context bounded analysis for the POWER architecture, by
     transformation of program. CBMC is used as a backend. It shows that context
     bounded analysis for POWER is decidable. Tool `power2sc`, compared with
     goto-instrument and niddhug. Evaluation on C programs."
 }
+
+@inproceedings{Turon2014,
+ author = {Turon, Aaron and Vafeiadis, Viktor and Dreyer, Derek},
+ title = {GPS: Navigating Weak Memory with Ghosts, Protocols, and Separation},
+ booktitle = {Proceedings of the 2014 ACM International Conference on Object Oriented Programming Systems Languages \& Applications},
+ series = {OOPSLA '14},
+ year = {2014},
+ isbn = {978-1-4503-2585-1},
+ location = {Portland, Oregon, USA},
+ pages = {691--707},
+ numpages = {17},
+ _url = {http://doi.acm.org/10.1145/2660193.2660243},
+ doi = {10.1145/2660193.2660243},
+ acmid = {2660243},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {c/c++, concurrency, program logic, separation logic, weak memory models},
+ _read = "0.3",
+ _summary = "Introduces a separation logic GPS which allows proving properties
+     about programs using the (fragment of) C11 memory model. The memory models
+     is restricted to non-atomic, acquire-release, and sequentially consistent
+     accesses -- i.e. it lacks support for relaxed and consume-release accesses."
+} 
+
+@Inbook{Dan2013,
+    author="Dan, Andrei Marian
+        and Meshman, Yuri
+        and Vechev, Martin
+        and Yahav, Eran",
+    editor="Logozzo, Francesco
+        and F{\"a}hndrich, Manuel",
+    title="Predicate Abstraction for Relaxed Memory Models",
+    bookTitle="Static Analysis: 20th International Symposium, SAS 2013, Seattle,
+    WA, USA, June 20-22, 2013. Proceedings",
+    year="2013",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="84--104",
+    abstract="We present a novel approach for predicate abstraction of programs
+        running on relaxed memory models. Our approach consists of two steps.",
+    isbn="978-3-642-38856-9",
+    doi="10.1007/978-3-642-38856-9_7",
+    _url="https://doi.org/10.1007/978-3-642-38856-9_7",
+    _read = "0.5",
+    _summary = "Presents an approach for verification of (potentially
+        infinite state space) programs under TSO and PSO using predicate
+        abstraction. The paper first shows that it is not possible to use
+        traditional predicate abstraction  to produce boolean program and then
+        verify this boolean program using weak memory semantics. Instead, the
+        authors propose a schema which first verifies the program under SC and
+        then extrapolates predicates from SC run to verify a transformed version of
+        the original program which has store buffers explicitly encoded. The
+        store buffers are bounded in this transformation. Authors also provide
+        implementation in the \textsc{cupex} and evaluation on 7 programs which
+        shows advantages of their predicate extrapolation method."
+}
+
 
 
 
