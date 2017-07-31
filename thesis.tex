@@ -16,9 +16,15 @@
            , style=alphabetic
            , sortlocale=en_US
            , bibencoding=UTF8
-           , maxcitenames=3
-           , maxbibnames=100
+           , maxnames=100
            ]{biblatex}
+\DeclareSourcemap{
+    \maps[datatype=bibtex, overwrite]{
+        \map{
+            \step[fieldset=editor, null]
+        }
+    }
+}
 
 \usepackage{xcolor}
 \definecolor{dark-red}{rgb}{0.6,0.15,0.15}
