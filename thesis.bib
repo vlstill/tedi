@@ -603,6 +603,52 @@ _summary = "Context bounded analysis for the POWER architecture, by
         *DefectFindrer*."
 }
 
+@Inbook{Huynh2006,
+    author="Huynh, Thuan Quang
+        and Roychoudhury, Abhik",
+    editor="Misra, Jayadev
+        and Nipkow, Tobias
+        and Sekerinski, Emil",
+    title="A Memory Model Sensitive Checker for C{\#}",
+    bookTitle="FM 2006: Formal Methods: 14th International Symposium on Formal
+        Methods, Hamilton, Canada, August 21-27, 2006. Proceedings",
+    year="2006",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="476--491",
+    abstract="Modern concurrent programming languages like Java and C{\#} have a
+        programming language level memory model; it captures the set of all
+        allowed behaviors of programs on any implementation platform --- uni- or
+        multi-processor. Such a memory model is typically weaker than Sequential
+        Consistency and allows reordering of operations within a program thread.
+        Therefore, programs verified correct by assuming Sequential Consistency
+        (that is, each thread proceeds in program order) may not behave
+        correctly on certain platforms! The solution to this problem is to
+        develop program checkers which are memory model sensitive. In this
+        paper, we develop such an invariant checker for the programming language
+        C{\#}. Our checker identifies program states which are reached only
+        because the C{\#} memory model is more relaxed than Sequential
+        Consistency. Furthermore, our checker identifies (a) operation
+        reorderings which cause such undesirable states to be reached, and (b)
+        simple program modifications --- by inserting memory barrier operations
+        --- which prevent such undesirable reorderings.",
+    isbn="978-3-540-37216-5",
+    doi="10.1007/11813040_32",
+    url="https://doi.org/10.1007/11813040_32",
+    _summary="Presents explicit state model checker for C# programs (supporting
+        subset of C#/.NET bytecode) which uses the .NET memory model.  The
+        verifier first verifies program under SC and then it explores additional
+        runs allowed under .NET memory model.  It can also insert barriers into
+        the program to avoid relaxed runs which violate given property (that is,
+        not all relaxed runs are disabled by barriers but only those
+        that actually lead to property violation).  The implementation
+        of the exploration algorithm uses list of delayed instructions to
+        implement instruction reordering.  While the authors mention that the
+        number of reordered instructions is not bounded, they do not discuss how
+        this approach works for programs with cycles.",
+    _read=1
+}
+
 
 
 

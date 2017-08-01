@@ -126,5 +126,11 @@ There are many techniques for analysis of programs under relaxed memory models w
     The entire program, memory constraits, and specification is encoded as constraint solving problem, which can be solved by constraint solver, e.g. Prolog with finite domain data as used in the presented tool
     *DefectFindrer*.
 
-
 *   \TODO{Nemos framework (Non-operational yet Executable Memory Ordering Specification) -- Nemos: A framework for axiomatc and executable specificfication of memory consistency models.}
+
+*   \cite{Huynh2006} -- Presents explicit state model checker for C# programs (supporting subset of C#/.NET bytecode) which uses the .NET memory model.
+ The verifier first verifies program under SC and then it explores additional runs allowed under .NET memory model.
+ It can also insert barriers into the program to avoid relaxed runs which violate given property (that is, not all relaxed runs are disabled by barriers but only those that actually lead to property violation).
+ The implementation of the exploration algorithm uses list of delayed instructions to implement instruction reordering.
+ While the authors mention that the number of reordered instructions is not bounded, they do not discuss how this approach works for programs with cycles.
+
