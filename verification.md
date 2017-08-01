@@ -119,3 +119,12 @@ There are many techniques for analysis of programs under relaxed memory models w
     Instead, they propose a schema which first verifies the program under SC and then extrapolates predicates from SC run to verify a transformed version of the original program which has store buffers explicitly encoded.
     The store buffers are bounded in this transformation.
     Implementation in the tool \textsc{cupex} is also provided, as well as evaluation on 7 programs which shows advantages of their predicate extrapolation method.
+
+*   \cite{Yang2004} -- Presents formal semantics for a simple programming language including its precise memory semantics.
+    The motivation is to provide verification procedure for detecting data races under the Java Memory Model (JMM).
+    The formalization uses SC as it is sufficient for detection of data races under JMM (JMM defines data race freedom in terms on SC runs).
+    The entire program, memory constraits, and specification is encoded as constraint solving problem, which can be solved by constraint solver, e.g. Prolog with finite domain data as used in the presented tool
+    *DefectFindrer*.
+
+
+*   \TODO{Nemos framework (Non-operational yet Executable Memory Ordering Specification) -- Nemos: A framework for axiomatc and executable specificfication of memory consistency models.}

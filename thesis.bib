@@ -555,6 +555,56 @@ _summary = "Context bounded analysis for the POWER architecture, by
         shows advantages of their predicate extrapolation method."
 }
 
+@Inbook{Yang2004,
+    author="Yang, Yue
+        and Gopalakrishnan, Ganesh
+        and Lindstrom, Gary",
+    editor="Davies, Jim
+        and Schulte, Wolfram
+        and Barnett, Mike",
+    title="Memory-Model-Sensitive Data Race Analysis",
+    bookTitle="Formal Methods and Software Engineering: 6th International
+        Conference on Formal Engineering Methods, ICFEM 2004, Seattle, WA, USA,
+    November 8-12, 2004. Proceedings",
+    year="2004",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="30--45",
+    abstract="We present a ``memory-model-sensitive'' approach to validating
+        correctness properties for multithreaded programs. Our key insight is
+        that by specifying both the inter-thread memory consistency model and
+        the intra-thread program semantics as constraints, a program
+        verification task can be reduced to an equivalent constraint solving
+        problem, thus allowing an exhaustive examination of all thread
+        interleavings precisely allowed by a given memory model. To demonstrate,
+        this paper formalizes race conditions according to the new Java memory
+        model, for a simplified but non-trivial source language. We then
+        describe the implementation of a memory-model-sensitive race detector
+        using constraint logic programming (CLP). In comparison with
+        conventional program analysis, our approach does not offer the same kind
+        of performance and scalability due to the complexity involved in exact
+        formal reasoning. However, we show that a formal semantics can serve
+        more than documentation purposes --- it can be applied as a sound basis
+        for rigorous property checking, upon which more scalable methods can be
+        derived.",
+    isbn="978-3-540-30482-1",
+    doi="10.1007/978-3-540-30482-1_11",
+    _url="https://doi.org/10.1007/978-3-540-30482-1_11",
+    _read=1,
+    _summary = "Presents formal semantics for a simple programming language
+        including its precise memory semantics.
+        The motivation is to provide verification procedure for detecting data
+        races under the Java Memory Model (JMM).
+        The formalization uses SC as it is sufficient for detection of data
+        races under JMM (JMM defines data race freedom in terms on SC runs).
+        The entire program, memory constraits, and specification is encoded as
+        constraint solving problem, which can be solved by constraint solver,
+        e.g. Prolog with finite domain data as used in the presented tool
+        *DefectFindrer*."
+}
+
+
+
 
 ###############################
 
