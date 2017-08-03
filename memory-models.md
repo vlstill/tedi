@@ -64,7 +64,7 @@ Location program order
 ~   $m_1 \rel{po-loc} m_2$, is a restriction of \rel{po} in which $m_1$ and $m_2$ has to access the same memory location.
 
 Preserved program order
-~   $m_1 \rel{ppo} m_2$, is a subrelation of \rel{po} which is preserved by the given memory model (e.g. \tso does not preserve $w \rel{po} r$ pairs for different memory locations, \pso also does not preserve $w \rel{po} w$ pairs \cite{sparcmanual}).
+~   $m_1 \rel{ppo} m_2$, is a subrelation of \rel{po} which is preserved by the given memory model (e.g. \tso does not preserve $w \rel{po} r$ pairs for different memory locations, \pso also does not preserve $w \rel{po} w$ pairs \cite{SPARC94}).
 
 Read-from map
 ~   $w \rel{rf} r$, links a write to a read which reads its value.
@@ -107,7 +107,7 @@ Memory coherence of each location must be respected
 
 No *out of thin air* values
 ~   i.e. $\rel{rf} \cup \rel{dp}$ must be acyclic. The idea behind this is that values cannot depend on themselves.
-    However, while common hardware architectures do not exhibit thin air reads, some theoretical memory models allow them (e.g. the memory model of C++11 \cite{cppmemmod, cpp11}).
+    However, while common hardware architectures do not exhibit thin air reads, some theoretical memory models allow them (e.g. the memory model of C++11 \cite{cppmemmod, isocpp11draft}).
     A larger discussion of the problem of thin air reads follows shortly.
 
 This classification now allows us to decide the validity of an execution under a given memory model: we must classify ordering between actions of this execution and check that these relations follow the three constraints mentioned above.
@@ -223,7 +223,7 @@ The operational semantics describes behavior of a program in terms of its run on
 
 In this section we will describe commonly used and formalized memory models.
 These memory models are usually derived from hardware or programming language memory models.
-In older works, most notable memory models (apart from Sequential Consistency) were memory models of the SPARC processors which can be configured for different memory models (in order from most strict to most relaxed): Total Store Order (TSO), Partial Store Order (PSO), Relaxed Memory Order (RMO) \cite{sparcmanual}.
+In older works, most notable memory models (apart from Sequential Consistency) were memory models of the SPARC processors which can be configured for different memory models (in order from most strict to most relaxed): Total Store Order (TSO), Partial Store Order (PSO), Relaxed Memory Order (RMO) \cite{SPARC94}.
 Later memory models include Non-Speculative Writes (NSW) memory model which is more relaxed then PSO but less relaxed then RMO and is notable because reachability problem of programs with finite state processes under NSW is decidable while for RMO this problem is not decidable, which makes this memory models significant even if it does not describe any hardware implementation.
 Further significant memory models include the `x86` (and `x86-64`) memory model formalized as `x86`-TSO, POWER and ARM memory models, and memory models of certain programming languages, namely Java Memory Models (Java was the first mainstream programming language with defined memory model), C11 and C++11.
 
@@ -314,11 +314,11 @@ These instructions behave as if a memory lock was acquired before the operation,
 
 Partial store order (PSO) is similar to TSO, but it also allows reordering of pairs of writes which do not access the same memory location ($w_1 \rel{po} w_2$ pairs).
 Operational semantics corresponds to a machine which has separate FIFO store buffer for each memory location.
-Again, processor can read from its local store buffers, but values saved in these buffers are invisible for other processors \cite{sparcmanual}.
+Again, processor can read from its local store buffers, but values saved in these buffers are invisible for other processors \cite{SPARC94}.
 PSO hardware will often include barriers both for restoration of TSO and SC \cite{TODO}.
 
 An example for PSO-allowed run which is not TSO-allowed can be found in \autoref{fig:pso}.
-This memory model is supported for example by SPARC in PSO mode, but this is not a common architecture and configuration \cite{sparcmanual, hw_view_for_sw_hackers}.
+This memory model is supported for example by SPARC in PSO mode, but this is not a common architecture and configuration \cite{SPARC94, hw_view_for_sw_hackers}.
 Therefore, this memory model is mostly important theoretically as reachability is decidable for it (see \autoref{sec:decidability}) and even incomplete analyses can be significantly simpler for PSO them for RMO or NSW.
 
 \begin{figure}[tp]
@@ -583,8 +583,8 @@ Line 4 show explicit sequentially consistent store, line 5 show relaxed store. L
 
 ## LLVM
 
-The LLVM memory model is derived from the C++11 memory model, with the difference that it lacks release-consume ordering and offers additional *Unordered* ordering which does not guarantee atomicity but makes results of data races defined (while in C/C++ data races on non-atomic locations yield the entire run of the program undefined) \cite{LangRef}.
-The *Unordered* operations are intended to match semantics of Java memory model for shared variables \cite{LangRef}.
+The LLVM memory model is derived from the C++11 memory model, with the difference that it lacks release-consume ordering and offers additional *Unordered* ordering which does not guarantee atomicity but makes results of data races defined (while in C/C++ data races on non-atomic locations yield the entire run of the program undefined) \cite{llvm:langref}.
+The *Unordered* operations are intended to match semantics of Java memory model for shared variables \cite{llvm:langref}.
 
 # Memory Models and Compilers {#sec:compilers}
 
