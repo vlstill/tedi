@@ -56,3 +56,17 @@ To this end, we would like to implement algorithm for DIVINE which directs searc
 It might be also possible to employ heuristics to direct relaxations so that it is first applied on variables on which it is more likely to cause property violations.
 
 # Time Plan
+
+The plan of my future study and research activities is following:
+
+Now -- October 2017
+
+~   
+
+January 2018
+
+~   Doctoral exam and defense of this thesis proposal.
+
+January 2020
+
+~   The final version of the thesis.
