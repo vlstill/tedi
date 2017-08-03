@@ -134,3 +134,9 @@ There are many techniques for analysis of programs under relaxed memory models w
  The implementation of the exploration algorithm uses list of delayed instructions to implement instruction reordering.
  While the authors mention that the number of reordered instructions is not bounded, they do not discuss how this approach works for programs with cycles.
 
+*   \cite{Burnim2011} -- Present algorithms for finding violations of SC under TSO or PSO.
+    The algorithm explores only SC runs while keeping additional information for violation detection.
+    The algorithm is based on operational semantics for TSO and PSO and should be asymptotically faster then the one presented in \cite{Burckhardt2008} while also being sound and complete.
+    There is also implementation in the tool THRILLE.
+
+

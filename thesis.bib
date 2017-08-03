@@ -488,7 +488,6 @@ year="2017",
 publisher="Springer Berlin Heidelberg",
 address="Berlin, Heidelberg",
 pages="56--74",
-abstract="We propose an under-approximate reachability analysis algorithm for programs running under the POWER memory model, in the spirit of the work on context-bounded analysis intitiated by Qadeer et al. in 2005 for detecting bugs in concurrent programs (supposed to be running under the classical SC model). To that end, we first introduce a new notion of context-bounding that is suitable for reasoning about computations under POWER, which generalizes the one defined by Atig et al. in 2011 for the TSO memory model. Then, we provide a polynomial size reduction of the context-bounded state reachability problem under POWER to the same problem under SC: Given an input concurrent program                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}{\$}{\$}                  , our method produces a concurrent program                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}'{\$}{\$}                   such that, for a fixed number of context switches, running                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}'{\$}{\$}                   under SC yields the same set of reachable states as running                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}{\$}{\$}                   under POWER. The generated program                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}'{\$}{\$}                   contains the same number of processes as                                                                                   {\$}{\$}{\backslash}mathcal {\{}P{\}}{\$}{\$}                  , and operates on the same data domain. By leveraging the standard model checker CBMC, we have implemented a prototype tool and applied it on a set of benchmarks, showing the feasibility of our approach.",
 isbn="978-3-662-54580-5",
 doi="10.1007/978-3-662-54580-5_4",
 _url="https://doi.org/10.1007/978-3-662-54580-5_4",
@@ -649,8 +648,43 @@ _summary = "Context bounded analysis for the POWER architecture, by
     _read=1
 }
 
+@Inbook{Burnim2011,
+    author="Burnim, Jabob
+        and Sen, Koushik
+        and Stergiou, Christos",
+    editor="Abdulla, Parosh Aziz
+        and Leino, K. Rustan M.",
+    title="Sound and Complete Monitoring of Sequential Consistency for Relaxed Memory Models",
+    bookTitle="Tools and Algorithms for the Construction and Analysis of Systems: 17th International Conference, TACAS 2011, Held as Part of the Joint European Conferences on Theory and Practice of Software, ETAPS 2011, Saarbr{\"u}cken, Germany, March 26--April 3, 2011. Proceedings",
+    year="2011",
+    publisher="Springer Berlin Heidelberg",
+    address="Berlin, Heidelberg",
+    pages="11--25",
+    abstract="We present a technique for verifying that a program has no executions violating sequential consistency (SC) when run under the relaxed memory models Total Store Order (TSO) and Partial Store Order (PSO). The technique works by monitoring sequentially consistent executions of a program to detect if similar program executions could fail to be sequentially consistent under TSO or PSO. We propose novel monitoring algorithms that are sound and complete for TSO and PSO---if a program can exhibit an SC violation under TSO or PSO, then the corresponding monitor can detect this on some SC execution. The monitoring algorithms arise naturally from the operational definitions of these relaxed memory models, highlighting an advantage of viewing relaxed memory models operationally rather than axiomatically. We apply our technique to several concurrent data structures and synchronization primitives, detecting a number of violations of sequential consistency.",
+    isbn="978-3-642-19835-9",
+    doi="10.1007/978-3-642-19835-9_3",
+    url="https://doi.org/10.1007/978-3-642-19835-9_3"
+}
 
-
+@article{Arvind2006,
+    author = {Arvind, Arvind and Maessen, Jan-Willem},
+    title = {Memory Model = Instruction Reordering + Store Atomicity},
+    journal = {SIGARCH Comput. Archit. News},
+    issue_date = {May 2006},
+    volume = {34},
+    number = {2},
+    month = may,
+    year = {2006},
+    issn = {0163-5964},
+    pages = {29--40},
+    numpages = {12},
+    _url = {http://doi.acm.org/10.1145/1150019.1136489},
+    doi = {10.1145/1150019.1136489},
+    acmid = {1136489},
+    publisher = {ACM},
+    address = {New York, NY, USA},
+    _read = 1,
+}
 
 ###############################
 
