@@ -596,7 +596,7 @@ For example, two loads of of non-atomic variables in C++ with the same memory lo
 These optimizations complicate analysis if they should be taken into account.
 The two basic options for their handling include reasoning about all permitted reordering (see e.g. \cite{relaxed_opt_semantics_no_thin}), or side stepping the problem by using the same optimizing compiler to produce code both for verification and for actual execution (e.g. by verifying the binary or optimized intermediate representation of the compiler).
 
-\TODO{#####}
+\TODO{----}
 
 *   \cite{Arvind2006} -- Describes memory models in terms of two properties: allowed instruction reordering and *store atomicity*.
     Store atomicity roughly states that there is global interleaving of all possibly reordered operations.
