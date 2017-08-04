@@ -1,5 +1,16 @@
+---
+vim: wrap linebreak nolist formatoptions-=t
+---
 
-## Published Papers
+My work so far was mostly concerned with the DIVINE model checker \cite{DIVINEToolPaper2017}.
+It started during my bachelor studies with techniques for compression of state space, which resulted in publication \cite{RSB15TC}.
+During my master's study, my work included heuristics for state space exploration \cite{SRB14CSDR} and transfromations of LLVM Intermediate Reprezentation \cite{SRB15weakmem, mgrthesis}.
+These transformations included optimizations which can lead to more efficient verifications and first transformations for relaxed memory models.
+
+During my PhD work, I fist focused mostly on general verification of parallel C and C++ programs.
+This included revised support for C++ exceptions \cite{SRB2017except} and a lot of work on the new version of DIVINE which mostly had character of implementation \cite{DIVINEToolPaper2017}.
+
+# Published Papers
 
 \newcommand{\fcite}[1]{\fullcite{#1}~\cite{#1}}
 
