@@ -2,6 +2,11 @@
 vim: wrap linebreak nolist formatoptions-=t
 ---
 
+Overall, the aim of my PhD research is to devise methods for efficient analysis of programs running under relaxed memory models.
+These methods should also be implemented and thoroughly evaluated, aiming at real-world usability.
+The implementation will be primarily aimed for the DIVINE model checker\ \cite{DIVINEToolPaper2017}.
+Namely, I would like to make it possible to apply relaxed-memory-aware analysis to unit tests of nontrivial parallel data structures and algorithms.
+
 # Objectives and Expected Results
 
 ## A LLVM-Based Program Transformation for Analysis of Relaxed Memory Models
@@ -9,11 +14,12 @@ vim: wrap linebreak nolist formatoptions-=t
 A large number of verifiers and analysers with support for parallel programs lack support for relaxed memory models and assume sequential consistency.
 While it is possible to extend these verifiers to relaxed memory models directly in many cases, we believe that easier and more versatile path lies in transformation of the input formalism for these analysers, as done for example by \cite{Alglave2013}.
 This way, the input program is transformed into another program which, when run under SC, simulates all runs of the original program under a given relaxed memory model.
+
 The most promising approach in this direction seems to be usage of the LLVM Intermediate Representation (LLVM IR) as the source and target for the transformation.
-The reason for choice of LLVM IR is that it is widely used both by compilers (namely the clang compiler which can be used to compile C, C++, and Objective C on all major operating systems) and by many analysers: to name a few DIVINE\ \cite{DIVINEToolPaper2017} \TODO{, LLBMC\ \cite{LLBMC}, KLEE\ \cite{KLEE}, and SMACK\ \cite{SMACK} already have support for LLVM *but not parallelism*} and there are also plans to add LLVM support into CPAchecker\ \cite{Beyer2011} which has recent support for parallel programs \cite{Beyer2016}.
+The choice of LLVM IR is justified by its wide use both by compilers (namely the clang compiler which can be used to compile C, C++, and Objective C on all major operating systems) and by a growing number of analysers: DIVINE\ \cite{DIVINEToolPaper2017} has support for both LLVM IR and parallelism and CPAchecker\ \cite{Beyer2011} has support for parallelism\ \cite{Beyer2016} and there are plans to add support for LLVM IR to it. LLBMC\ \cite{LLBMC}, KLEE\ \cite{KLEE}, and SMACK\ \cite{SMACK} already have support for LLVM IR, but they do not currently support parallelism without a sequentializers which pre-processes the input programs.
 Also, LLVM IR can be rather easily transformed as it is used for optimizations in the LLVM framework.
 
-The main advantage of the program transformation approach is that the same transformation (possibly with minor configuration) can be used for many analysers.
+One of the advantages of the program transformation approach is that the same transformation (possibly with minor configuration) can be used for many analysers.
 The transformation works by replacing memory operations with either fragments of code or calls to functions which provide implementation of given operation under a relaxed memory model.
 This also means that the same transformation, but with different implementations of memory operations, can be used to simulate different memory model, which makes this approach especially suitable for evaluation of different memory models and modes of their simulation.
 
@@ -27,18 +33,20 @@ Furthermore, there are many options in optimization of the transformation, e.g. 
 As already mentioned, the program transformation needs to be accompanied by implementation of memory model operations.
 The existing implementations for DIVINE \cite{SRB15weakmem, mgrthesis} support either TSO or a subset of the C++11 memory model, both of which use buffer bounding to limit state space explosion and achieve decidability while keeping the implementation simple.
 
-Therefore, we would like to implement framework for simulation of different memory models.
-Namely the NSW memory model which is significant for being decidable for programs with finite-state threads.
+We would like to implement framework for simulation of various memory models.
+Namely the NSW memory model is significant for being decidable for programs with finite-state threads while also being more relaxed then PSO.
 Also NSW subsumes TSO and PSO memory models and therefore its implementation can be easily restricted and reused for verification under these memory models.
-In addition to that, the more relaxed memory models RMO, POWER and ARM should also be investigated.
+In addition to that, more relaxed memory models RMO, POWER and ARM should also be investigated.
 Finally, we would like to re-visit the case of C/C++11 memory model once the framework of relaxed memory models offers sufficient relaxations.
 
-At first, we will continue to use bounded data structures in the implementation of these memory models; however, we would also like to investigate extension of non-bounded, automata-based techniques outlined for example in \cite{Linden2010} to more relaxed memory models (\cite{Linden2010} supports only TSO).
+At first, we will continue to use bounded data structures in the implementation of these memory models (therefore, devised methods will be sound, but not complete); however, we would also like to investigate extension of non-bounded, automata-based techniques outlined for example in \cite{Linden2010} to more relaxed memory models (\cite{Linden2010} supports only TSO).
+Another area worth considering to recover completeness of decision procedures for NSW is usage of abstractions.
+Both automata-based approach and abstractions will likely also require changes to the verification algorithm and therefore will not be implemented purely as program transformations.
 
 ## Investigation of Different Data Structures for Simulation of Relaxed Memory Models
 
 Furthermore, while there are many approaches for description of axiomatic semantics of memory models, it seems that operational semantics is generally described in terms of very simple data structures which, despite being used as basis for implementation of verification algorithms or program transformations, are not optimized for efficient implementation.
-Therefore, we see opportunity in investigation of new data structures which can be used for implementation of memory model transformations.
+Therefore, we see opportunity in investigation of new data structures which can be used for implementation of memory model transformations and which would yield better performance for the resulting decision procedures.
 
 Namely, the standard operational approach to TSO or PSO simulation is using store buffers which are filled by store operations and later non-deterministically flushed.
 This approach, while simple means that there are states of the program in which the only difference is if a certain value is waiting in the store buffer or already flushed to the memory.
