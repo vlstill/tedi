@@ -99,6 +99,8 @@
 
 \newcommand{\llvm}{\textsf{LLVM}\xspace}
 \newcommand{\ltl}{LTL\xspace}
+\newcommand{\complexity}[1]{\textsc{#1}\xspace}
+\newcommand{\PSPACE}{\complexity{PSPACE}}
 
 \newcommand{\darcs}{Darcs\xspace}
 
@@ -177,6 +179,8 @@
     {\threadnext\begin{adjustbox}{valign=t,minipage={0.95\threadwidth}}}
     {\end{adjustbox}\global\def\threadnext{\hfill}}
 
+\setcounter{tocdepth}{1}
+
 \begin{document}
 
 % initial pages from Mornfall + modifications
@@ -241,5 +245,7 @@
 \addcontentsline{toc}{chapter}{Bibliography}
 \markboth{}{} % avoid headers from last chapter in bibliography
 \printbibliography[heading=none]
+
+\chapter{Publications}
 
 \end{document}
