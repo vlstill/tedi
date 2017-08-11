@@ -64,6 +64,10 @@ Furthermore, it is expected that by directing exploration in this way, the algor
 To this end, we would like to implement and evaluate algorithm for DIVINE which directs search by exploring sequentially consistent runs first and then gradually adds relaxations to the program.
 It might be also possible to employ heuristics to direct relaxations so that it is first applied on variables on which it is more likely to cause property violations.
 
+## Other sources of reordering
+
+-   PO is not a total order
+
 # Time Plan
 
 The plan of my future study and research activities is following:
