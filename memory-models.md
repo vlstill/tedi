@@ -47,84 +47,29 @@ For this reason, it is useful to have formal semantics given to memory models.
 
 Two main options are used for the description of memory model semantics, an axiomatic semantics usually based on dependency relations between actions of the program, and operational semantics which describes working of an abstract machine which implements the given memory model.
 
-The axiomatic semantics of memory models builds on relations between various (memory related) actions of the program and properties of these relations.
+## Axiomatic Semantics
+
+The axiomatic semantics of memory models usually builds on relations between various (memory related) actions of the program and properties of these relations.
 These relations are mostly partial orders and a sequence of operations usually adheres to a memory model if a union of memory-model-specific subset of these relations is a partial order (i.e. is acyclic).
 There are several notations for describing axiomatic semantics which mostly differ in the names of defined relations and in some detains in the description.
 Some of them are used to describe a particular memory model \cite{…; …}.
 The framework presented in \cite{Alglave2010_fences} is more general and aims at description of different memory models in a unified way by a set of common dependency relations.
-
-Following \cite{Alglave2010_fences} we now introduce some relations between memory operations. All these relations are partial orders.
-We will denote reads by $r$ ($r_1, r_2, …$), writes by $w$ ($w_1, w_2, …$), and arbitrary memory operations by $m$ ($m_1, m_2…$).
-A read or write can also be part of atomic read-modify-write operation.
-
-Program order
-~   $m_1 \rel{po} m_2$, is a total order of actions performed by one processor (or thread).
-    It never relates actions from different threads.
-
-Dependencies
-~   $r \rel{dp} m$, represents data and control dependencies between instructions, it is a subrelation of \rel{po} and its source is always a read.
-
-Location program order
-~   $m_1 \rel{po-loc} m_2$, is a restriction of \rel{po} in which $m_1$ and $m_2$ has to access the same memory location.
-
-Preserved program order
-~   $m_1 \rel{ppo} m_2$, is a subrelation of \rel{po} which is preserved by the given memory model.
-
-Read-from map
-~   $w \rel{rf} r$, links a write to a read which reads its value.
-    For each read $r$ there is a unique write $w$ such that $w \rel{rf} r$.
-
-External read-from map
-~   $w \rel{rfe} r$, is a subrelation of \rel{rf} which links only events from distinct threads.
-
-Internal read-from map
-~   $w \rel{rfi} r$, is a subrelation or \rel{rf} which links only events the same thread.
-
-Global read-from
-~   $w \rel{grf} r$, is a subrelation of \rel{rf} which is preserved by a given memory model.
-
-Write serialization
-~   $w_1 \rel{ws} w_2$, is a total order on writes to the same memory location (i.e. the order in which writes become visible to all threads).
-    \TODO{Often also denoted as ?coherence order?}
-
-From-read map
-~   $r \rel{fr} w$, denotes that $r$ reads from a write which precedes $w$ immediately in \rel{ws}.
-    \TODO{Often also denoted as ?conflict relation?}
-    It can be defined as $r \rel{fr} w \stackrel{def}{=} \exists w'.
-    w' \rel{rf} r \land w' \rel{ws} w$.
-
-Barrier ordering
-~   $m_1 \rel{ab} m_2$, is ordering introduced by memory barriers (fences).
-
-Global happens-before
-~   $m_1 \rel{ghb} m_2$, is a union of relations which are global. \rel{ws} and \rel{fr} are always included in \rel{ghb}.
-    \rel{ppo}, \rel{grf}, and \rel{ab} are also included, but their definition depends on the memory model.
-    That is, $\rel{ghb} \stackrel{def}{=} \rel{ppo} \cup \rel{ws} \cup \rel{fr} \cup \rel{grf} \cup \rel{ab}$.
-
-In this framework, the memory model is given by the choice of the relations defining \rel{ghb}. In all cases, there are three constraints which must be met.
-
-\rel{ghb} must be acyclic
-~   this corresponds to the fact that it (partially) orders actions of the program.
-
-Memory coherence of each location must be respected
-~   i.e. $\rel{po-loc} \cup \rel{rf} \cup \rel{ws} \cup \rel{fr}$ must be acyclic.
-
-No *out of thin air* values
-~   i.e. $\rel{rf} \cup \rel{dp}$ must be acyclic. The idea behind this is that values cannot depend on themselves.
-    However, while common hardware architectures do not exhibit thin air reads, some theoretical memory models allow them (e.g. the memory model of C++11 \cite{cppmemmod, isocpp11draft}).
-    A larger discussion of the problem of thin air reads follows shortly.
-
-This classification now allows us to decide the validity of an execution under a given memory model: we must classify ordering between actions of this execution and check that these relations follow the three constraints mentioned above.
+In our figures, we will borrow some notation from \cite{Alglave2010_fences}, namely the *program order relation* (\rel{po}) which orders actions performed by a single thread, the *read-from* relation (\rel{rf}) which connects a read with the store which saved the loaded value, and the *from-read* relation (\rel{fr}) which connects read with the nearest store after the one read (i.e. with the store which will overwrite the read value).
+Other relations will be introduced as needed in the figures.
 
 ### The Problem of Out of Thin Air Reads {#sec:thin}
 
 The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm_Gosling2005, javamm_popl_Manson2005}.
 The idea is that a value produced by a read must not depend on itself.
+They are excluded from the Java memory models as they could allow creation of invalid pointers, effectively destroying any memory safety guarantees.
+Other programming languages, such as C and C++ allow them in their memory model, mostly in order not to disallow important optimizations (the C++ standard also states that no implementation should actually exhibit this behavior)
+Some formal memory model descriptions, such as \cite{Alglave2010_fences}, explicitly forbid out-of-thin air reads, while other allow them (e.g. the formalization of C++ memory model in \cite{cppmemmod}).
+
 See \autoref{fig:thin:naive} for example of out of thin air read.
-The motivation for exclusion of thin air reads from Java is that they could allow creating invalid pointers, effectively destroying memory safety guarantees of Java. 
 
 \begin{figure}[tp]
 
+\begin{subfigure}[t]{\textwidth}
 \begin{threads}{3}
 \begin{thread}
 
@@ -161,22 +106,14 @@ x = r2; // d
 Reachable `x == 1 && y == 1`?
 
 \begin{caption}
-An example of out of thin air reads -- suppose both `x` and `y` are initialized to 0, the question is if it is possible that at the end are both `x` and `y` equal to 1.
-Now if we disregarded the out of thin air condition, it would be possible to build execution where $a \rel{rf} d$ and $c \rel{rf} b$ allowing arbitrary value to appear in `x` and `y`.
-Therefore the goal configuration would be reachable (provided \rel{po} and \rel{dp} are not preserved).
-To our best knowledge, no common hardware architecture can have this behavior.
+An example of out of thin air reads.
+Suppose both `x` and `y` are initialized to 0, the question is if it is possible that at the end are both `x` and `y` equal to 1.
 \end{caption}
 \label{fig:thin:naive}
-\end{figure}
+\end{subfigure}
 
-Sadly, there seems to be no widely agreed-upon definition of out of thin air reads \cite{relaxed_opt_semantics_no_thin}.
-Even in the aforementioned definition, the problem is that the dependency relation \rel{dp} is not clearly defined -- if it is defined as syntactical dependency, that excluding thin air reads prohibits certain important optimizations.
-Indeed there are commonly used optimizations which are forbidden by the Java memory model \cite{Sevcik2008}.
-Furthermore, restricting the dependencies to semantic dependencies does not solve the problem efficiently as these are hard to compute as they are not properties of a single run of a program.
-In \autoref{fig:thin:deps}, it can be seen that while the write of `1` to `x` in the `then` branch of thread 2 is syntactically dependent on the load of `y`, it is not semantically dependent and indeed if the optimizer merged the two branches of the `if` and removed the `if` the write would become independent of the read.
-
-\begin{figure}[tp]
-
+\begin{subfigure}[t]{\textwidth}
+\bigskip
 \begin{threads}{3}
 \begin{thread}
 
@@ -217,17 +154,25 @@ else
 Reachable `r1 == 1 && r2 == 1`?
 
 \begin{caption}
-Example of program which exhibits thin air reads if we consider them to be defined by syntactical dependency, but not if we consider them defined by semantical dependency (as statements `d1` and `d2` can be merged and their `if` removed which allows reordering of `c` with merged `d1` + `d2`).
+Example of program which exhibits thin air reads if we consider them to be defined by syntactical dependency, but not if we consider them defined by semantical dependency (statements `d1` and `d2` can be merged and their `if` removed which allows reordering of `c` with the merged statement).
 Note that \rel{po} is considered not to be preserved by the memory model, therefore it is gray.
 \end{caption}
 \label{fig:thin:deps}
+
+\end{subfigure}
+\begin{caption}
+Illustration of out of thin air reads and related dependency problems. \rel{dp} denotes the dependency relation.
+\end{caption}
 \end{figure}
 
-This problem is especially important for programming languages because of optimizations which often do not preserve syntactic dependencies.
-On the level of assembly languages or machine code, syntactic dependencies usually coincide with notion of dependencies as seen by the processor.
-For this reason, the thin air condition is well justified and practical if reasoning about instructions, but not when reasoning about high level code in a programming language.
+Sadly, there seems to be no widely agreed-upon definition of out of thin air reads \cite{relaxed_opt_semantics_no_thin}.
+Even in the aforementioned definition, the problem is that the dependency relation is not clearly defined -- if it is defined as syntactical dependency, that excluding thin air reads prohibits certain important optimizations.
+Indeed \cite{Sevcik2008} shows that there are commonly used optimizations which are forbidden by the Java memory mode.
+Furthermore, restricting the dependencies to semantic dependencies does not solve the problem efficiently as these are hard to compute as they are not properties of a single run of a program: in \autoref{fig:thin:deps}, it can be seen that while the write of `1` to `x` in the `then` branch of thread 2 is syntactically dependent on the load of `y`, it is not semantically dependent and indeed if the optimizer merged the two branches of the `if` and removed the `if` the write would become independent of the read.
 
-For example, out of thin air reads are not prohibited by the C11 and C++11 standards even though these standards also state that implementations should not exhibit such behaviors (which is in agreement with current hardware which does not exhibit out thin air reads).
+As this behaviour is especially important for programming languages because of optimizations which often do not preserve syntactic dependencies.
+On the level of assembly languages or machine code, syntactic dependencies usually coincide with notion of dependencies as seen by the processor.
+For this reason, disallowing thin air reads is well justified and practical if reasoning on the level of assembly instructions (where it is in agreement with current hardware which does not exhibit out thin air reads).
 
 An alternative semantics that aims at avoiding semantical out of thin air reads while allowing optimizations is provided in \cite{relaxed_opt_semantics_no_thin}.
 
@@ -260,16 +205,16 @@ Further significant memory models include the `x86` (and `x86-64`) memory model 
 
 ## Sequential Consistency {#sec:sc}
 
-Under sequential consistency all memory actions are immediately globally visible and thereforec can be ordered by a total order (i.e. an execution of parallel program is an interleaving of actions of its threads).
+Under sequential consistency all memory actions are immediately globally visible and therefore can be ordered by a total order (i.e. an execution of parallel program is an interleaving of actions of its threads).
 Furthermore, there are no fences as SC has no need for them.
 In the operational semantics, this corresponds to machine without any caches and buffers where every write is immediately propagated to the global memory and every read reads directly from the memory.
 This is the most intuitive and strongest memory model and it is often used by program analysers, but it is not used in most modern hardware.
 
 ## Total Store Order {#sec:tso}
 
-Total store order (TSO) was introduced in the context of SPARC processors \cite{SPARC}.
-Iallows reordering of writes with following reads originating from the same thread that access different memory locations, i.e. it relaxes $w \rel{po} r$ pairs where $\loc{w} \neq \loc{r}$.
-Also, the thread that invokes a read can read value from a program-order-preceding write even if this write is not globally visible yet (that is \rel{rfi} is not subset of \rel{grf}) \cite{TODO}.
+Total Store Order (TSO) was introduced in the context of SPARC processors \cite{SPARC94}.
+It allows reordering of writes with following reads originating from the same thread that access different memory locations.
+Also, the thread that invokes a read can read value from a program-order-preceding write even if this write is not globally visible yet.
 
 Operational semantics can be described by a machine which has an unbounded, processor-local FIFO store buffer in each processor.
 Writes are stored into the store buffer in the order in which they are executed.
@@ -319,14 +264,18 @@ r2 = x; // d
 
 \noindent Reachable `r1 == 0 && r2 == 0`?
 \begin{caption}
-This code demonstrates behavior which is allowed under TSO but is not allowed under SC. Suppose the following run of the program: first `x = 1` is executed, but the store is buffered and does not reach memory yet. Then `r1 = y` is executed, reading value 0 from `y`. Then the second thread is executed fully, and since the update of `x` was not yet propagated to the memory it reads 0 from `x`. Finally, the update of `x` (by action `a`) is performed.
+This code demonstrates behavior which is allowed under TSO but is not allowed under SC.
+In this run `x = 1` is executed first, but the store is buffered and does not reach memory yet.
+Then `r1 = y` is executed, reading value 0 from `y`.
+Then the second thread is executed fully, and since the update of `x` was not yet propagated to the memory it reads 0 from `x`.
+Finally, the update of `x` (originating from `a`) is performed.
 \end{caption}
 \label{fig:tso}
 \end{figure}
 
 ## `x86`-TSO: `x86` and `x86-64` Processors
 
-The memory model used by `x86` and `x86-64` processors is based on TSO with additional fences and atomic instructions.
+The memory model used by `x86` and `x86-64` processors is basically TSO with different fences and atomic instructions.
 The memory model is described informally in Intel and AMD specification documents \cite{TODO, TODO}.
 Formal semantics derived from these documents and experimental evaluation was given in \cite{x86tso} in form of the `x86`-TSO memory model.
 The semantics of `x86`-TSO is formalized in HOL4 model and as an abstract machine.
@@ -335,16 +284,15 @@ On top of stores and loads which behave as under the TSO memory model, `x86` has
 
 ## Partial Store Order {#sec:pso}
 
-Partial store order (PSO) is similar to TSO and also introduced by the SPARC processors \cite{SPARC94}.
-On to of TSO relaxations it allows reordering of pairs of writes which do not access the same memory location ($w_1 \rel{po} w_2$ pairs).
-Operational semantics corresponds to a machine which has separate FIFO store buffer for each memory location.
+Partial Store Order (PSO) is similar to TSO and also introduced by the SPARC processors \cite{SPARC94}.
+On top of TSO relaxations it allows reordering of pairs of writes which do not access the same memory location.
+Operational semantics corresponds to a machine which has separate store buffer for each memory location.
 Again, processor can read from its local store buffers, but values saved in these buffers are invisible for other processors \cite{SPARC94}.
-PSO hardware will often include barriers both for restoration of TSO and SC \cite{TODO}.
+PSO-mode SPARC processors include barriers for restoration of TSO as well as SC \cite{SPARC94}.
 An example for PSO-allowed run which is not TSO-allowed can be found in \autoref{fig:pso}.
 
 This memory model is supported for example by SPARC in PSO mode, but this is not
-a common architecture and configuration \cite{SPARC94, hw_view_for_sw_hackers}:
-therefore, this memory model is mostly important theoretically.
+a common architecture and configuration \cite{SPARC94, hw_view_for_sw_hackers}, which means this memory model is mostly important theoretically.
 
 \begin{figure}[tp]
 \begin{threads}{3}
@@ -383,7 +331,10 @@ r1 = x;       // d
 
 \noindent Reachable `r1 == 0`?
 \begin{caption}
-This code demonstates behavior prohibited by TSO but allowed by PSO. In this case, the second thread waits for a guard `g` to be set and then attepts to read `x`. However, under PSO, writes to `x` and `g` can be reordered, resulting in action `d` reading from the initial value of `x`. Note that there is control flow dependency between `c` and `d`.
+This code demonstates behavior prohibited by TSO but allowed by PSO.
+In this case, the second thread waits for a guard `g` to be set and then attempts to read `x`.
+However, under PSO, writes to `x` and `g` can be reordered, resulting in action `d` reading from the initial value of `x`.
+Please note that there is control flow dependency between `c` and `d` and therefore they cannot be executed in inverted order.
 \end{caption}
 \label{fig:pso}
 \end{figure}
@@ -391,9 +342,10 @@ This code demonstates behavior prohibited by TSO but allowed by PSO. In this cas
 ## Non-Speculative Writes {#sec:nsw}
 
 The non-speculative writes memory model was introduced in \cite{Atig2012} as a memory model which is more relaxed then PSO, but its reachability problem for programs with finite state threads is still decidable.
-The operation model for this memory model is also defined in \cite{Atig2012}, using two-level store buffers and memory history buffer for reordering reads.
+The operation model for NSW is also defined in \cite{Atig2012}.
+It uses two levels of store buffers and a history buffer for reordering of reads.
 
-On top of PSO relaxations it allows reordering of reads with other reads and it is defined with read-read and write-write fences and atomic read-modify-write instructions.
+On top of PSO relaxations, NSW allows reordering of reads with other reads and it is defined with read-read and write-write fences and atomic read-modify-write instructions.
 We show example of NSW behaviour which is not allowed by PSO in \autoref{fig:nsw}.
 This memory model is proven to not allow causal cycles (which result in out-of-thin-air values).
 There are probably no processors which use NSW memory model -- it is important theoretically for its decidability proofs.
@@ -454,9 +406,10 @@ r4 = x; // f
 \end{tikzpicture}
 
 \begin{caption}
-An example for behaviour allowed by NSW but not allowed by PSO (or TSO).
+An example for behaviour allowed by NSW but not allowed by PSO.
 While the two writes are well ordered, the corresponding reads are not and since the memory model relaxes read-read ordering they can observe values in different order.
 The write fence is not necessary, if it would not be present the two threads would still not be able to observe different results under PSO, but it is used to demonstrate that read reordering more clearly.
+The fence gives rise to the \rel{ab} relation.
 \end{caption}
 \label{fig:nsw}
 \end{figure}
@@ -464,7 +417,7 @@ The write fence is not necessary, if it would not be present the two threads wou
 ## Relaxed Memory Order {#sec:rmo}
 
 The relaxed memory order (RMO) further relaxes NSW by allowing all pairs of memory operations to be reordering provided they don't access the same memory location.
-Operational semantics for RMO usually involves guessing loaded value at the point of the load instruction and validating it later.
+Operational semantics for RMO usually involves guessing loaded value at the point of the load instruction and validating the guess later.
 A relaxation not allowed under NSW but allowed under RMO is demonstrated by the example in \autoref{fig:rmo}.
 
 Examples of hardware architectures with RMO-like memory models are POWER, ARM, and Alpha \cite{hw_view_for_sw_hackers}.
@@ -532,10 +485,11 @@ r4 = x; // f
 \end{tikzpicture}
 
 \begin{caption}
-An example of behavior allowed by RMO, but not by TSO, PSO or NSW.
+An example of behavior allowed by RMO, but not by NSW .
 There are 4 threads, two of them writing one of `x` and `y`.
 The remaining two threads read these variables, but observe their updates in inverted order (i.e. the third thread first reads new value of `x` and then old value of `y`, therefore it observes `x` first, but the last thread observes new value of `y` and then old value of `x`).
-Please note that the read fences do not help in this case, as the two writes happen in independent threads an therefore are not ordered in any way with respect to each other (the are used only to distinguish from NSW).
+The read fences do not help in this case, as the two writes happen in independent threads an therefore are not ordered in any way with respect to each other (the fences are used only to distinguish from NSW).
+The \rel{ab} relation is created by the fences.
 \end{caption}
 \label{fig:rmo}
 \end{figure}

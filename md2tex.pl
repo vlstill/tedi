@@ -5,7 +5,7 @@ use warnings;
 
 use IPC::Open2;
 
-my @envs = ( "figure", "columns", "threads", "thread" );
+my @envs = ( "figure", "subfigure", "columns", "threads", "thread" );
 my @groups = ( "caption" );
 my @words = ();
 my @nonbreak = ( "ref", "cite" );
@@ -22,7 +22,7 @@ sub nonbreak
 sub env2pd
 {
     my $env = shift;
-    $text =~ s,\\(begin|end){$env},\\pandoc$1\\$env,gsm;
+    $text =~ s,\\(begin|end)\{$env\},\\pandoc$1\\$env,gsm;
 };
 
 sub pd2env
