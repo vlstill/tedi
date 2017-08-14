@@ -83,74 +83,100 @@ Authors also provide an implementation in the tool \textsc{Trencher} which uses 
 # Direct Analysis Techniques
 
 There are many techniques for analysis of programs under relaxed memory models which mostly fall into the category of bug finding tools -- such tools are unable to prove correctness in general, but they provide substantially better coverage of possible behaviors of parallel program then testing.
-Mostly, this incompleteness is caused by either bound on the number of instructions which can be reordered or number of context switches the program can do during any explored run. 
+Mostly, this incompleteness is caused by either bound on the number of instructions which can be reordered or number of context switches the program can do during any explored run.
 
-*   \cite{Alglave2013} -- `x86`, POWER/ARM - parametrized, code transformation,
-    sound but not complete (buffer bounding, loop bounding (if using BMC),
+There are several reasons for this bounding, the obvious one is the time complexity of the analysis, but another important reason is that dealing with programs in programming languages is substantially more difficult then dealing with programs given as composition of finite-state processes (as assumed in the complexity analyses).
+
+### Transformation-Based Techniques
+
+A widely used family of methods for analysis of relaxed memory models is based on transformation of an input program $P$ into a different program $P'$ such that running $P'$ under sequential consistency allows us to explore runs equivalent to running $P$ under some more relaxed memory model.
+The main advantage of this approach is that it makes it possible to reuse existing analysis tools for sequentially consistent programs together with all the advancements in their development.
+In most cases the transformation also includes some way of bounding relaxation and therefore this allows us exploring only a subset of runs of $P$ and further under-approximation might be caused by the used SC analyser (e.g. if bounded model checker is used as a backend).
+
+In \cite{Alglave2013} a transformation-based technique for the `x86`, POWER, and ARM memory models is presented.
+The transformation parametrized and can be tweaked to implement different memory models.
+The transformation is implemented in the tool `goto-instrument` for instrumentation of `goto`-programs which can be created by translation from C and therefore it primarily focuses on C programs.
+The output of the transformation is a `goto` which can be verified directly by some analysers, or translated to C.
+The technique presented in this work is sound, but not complete (due to buffer bounding and possible incompleteness in the backend).
+It is also not clear if it can cover all cases of delaying reads.
+The works is accompanied by Coq proofs matching the axiomatic semantics to the operational used for the implementation.
+\comment{sound but not complete (buffer bounding, loop bounding (if using BMC),
     probably not full RMO), general both in memory model and in tools used as
     backend, Coq proof that operational semantics matches
-    \cite{Alglave2010_fences}. C/goto-programs.
+    \cite{Alglave2010_fences}. C/goto-programs.}
 
-*   \cite{Atig2011} -- Program transformation, instead of store buffers it uses
-    additional copies of shared variables (the used language distinguished shared and thread-local variables).
-    It is bounded not in the size of the buffers (which are not encoded) but in number of context switches (two versions: total number of context switches is bounded, number of contexts switches the values is delayed is bounded). The memory model is \TODO{TODO}.
+Another approach to program transformation is taken in \cite{Atig2011}, it this case the transformation uses context switch bounding but not buffer bounding and it uses additional copies for shared variables for this simulation.
+The memory model used is TSO and two options for the transformation are presented, in the first one the total number of context switches is limited, in the second there is a limited number of context switches the value can be delayed for, but the overall analysis is not context-switch-bounded.
+There is no tool accompanying this publication -- the experiments were performed using manually translated C programs.
 
-*   \cite{Abdulla2017} -- Context bounded analysis for the POWER architecture, by transformation of program.
+In \cite{Abdulla2017} the context-bounded analysis using transformation is applied to the POWER memory model.
+The resulting program uses nondeteterminism heavily to guess results of sequence of instructions which is later checked.
+It uses bounded model checker CBMC as a backend.
+The publication is accompanied by a tool `power2sc` which implements the transformation of C programs.
+\comment{-- Context bounded analysis for the POWER architecture, by transformation of program.
     Uses nondeterminism heavily to guess result of sequence of instructions which is later checked.
     CBMC is used as a backend.
     It shows that context bounded analysis for POWER is decidable. 
     Tool `power2sc`, compared with goto-instrument and niddhug.
     Evaluation on C programs.
-    In a way extension of \cite{Atig2011}.
+    In a way extension of \cite{Atig2011}.}
 
-*   \cite{Bouajjani2015} -- introduces TSO lazily by iterative refinement, not
-    complete but should eventually find all errors. Based on robustness checker
-    of \cite{Bouajjani2013}. Special language, tool \textsc{Trencher}.
+Our own work in \cite{SRB15weakmem} presents transformation of LLVM bitcode to simulate buffer-bounded TSO runs.
+It targets DIVINE and therefore C and C++ programs.
 
-*     \cite{Abdulla2012} -- encoding of NSW to hierarchical store buffers +
-      history buffer, decidability proof without direct algorithm
+### Stateless Model Checking
 
-*   \cite{Linden2010} -- TSO, buffers represented by automata, without buffer
-    bounds, cycle iteration acceleration (for cycles involving changes in only one SB), uses sleep set POR which actually looks reasonable and aplicable to DIVINE due to crude definition of independence, verifies modified Promela, standalone implementation in Java. It is not clear if the algorithm is guaranteed to terminate.
+Stateless Model Checking methods are intended for safety analysis of terminating programs in real-world programming languages \cite{Godefroid1997}.
+They employ Dynamic Partial Order Reduction (DPOR) to avoid exploring equivalent runs of the program \cite{Flanagan2005dpor} and the works regarding relaxed memory models in this setting often discuss interlay between DPOR and relaxed memory model in length.
 
-*   \cite{Park1995} -- Explores SPARC hierarchy of memory models (TSO, PSO,
-    RMO), modelled using encoding from assembly to Mur$\varphi$.
-    The encoding allows all reordering of instructions allowed by given memory model (modulo bounds).
-    Bounded in number of reorderings. Targeted add small synchronization primitives such as spin locks.
+The work \cite{Norris2013} presents a stateless model checking approach to the C++11 memory model (with the exception of release-consume synchronization).
+It uses custom implementation of the C++ thread and atomic libraries to produce binaries which performs the analysis.
+It lazily builds relations between memory operations in the form of the *modification order graph*, which prevents exploration of infeasible executions as well as unnecessary distinction between equivalent executions.
+Furthermore, as the C++ memory model allows reordering of reads with future operation, the proposed technique allows this by propagating stored values to previous loads and validating this speculation.
+The paper includes a long discussion about features of the C++ memory model and the corresponding implementation in \textsc{CDSChecker}, which is usable for (small) unit tests of concurrent data structures written in C11 or C++11.
 
-*   \cite{Dan2013} -- Presents an approach for verification of (potentially infinite state space) programs under TSO and PSO using predicate abstraction.
-    The paper first shows that it is not possible to use traditional predicate abstraction to produce boolean program and then verify this boolean program using weak memory semantics.
-    Instead, they propose a schema which first verifies the program under SC and then extrapolates predicates from SC run to verify a transformed version of the original program which has store buffers explicitly encoded.
-    The store buffers are bounded in this transformation.
-    Implementation in the tool \textsc{cupex} is also provided, as well as evaluation on 7 programs which shows advantages of their predicate extrapolation method.
+In \cite{Zhang2015} authors focus mostly on modelling of TSO and PSO and its interplay with DPOR.
+They combine modelling of thread scheduling nondeterminism and memory model nondeterminism using store buffers to a common framework.
+This is done by adding store buffers to the program and adding shadow thread for each store buffer which is responsible for flushing contents of this buffer to the memory.
+The proposed approach is implemented in tool *rInspect*, which is a LLVM-based stateless model checker and it supports both unbounded store buffers and buffer bounding (however, as it is a stateless model checker, it works only on programs which terminate).
 
-*   \cite{Huynh2006} -- Presents explicit state model checker for C# programs (supporting subset of C#/.NET bytecode) which uses the .NET memory model.
- The verifier first verifies program under SC and then it explores additional runs allowed under .NET memory model.
- It can also insert barriers into the program to avoid relaxed runs which violate given property (that is, not all relaxed runs are disabled by barriers but only those that actually lead to property violation).
- The implementation of the exploration algorithm uses list of delayed instructions to implement instruction reordering.
- While the authors mention that the number of reordered instructions is not bounded, they do not discuss how this approach works for programs with cycles.
+Another approach to combining TSO and PSO analysis with stateless model checking is presented in \cite{Abdulla2015}.
+In this work executions are represented by chronological traces which capture dependencies required to represent interaction between memory actions.
+These chronological traces are acyclic relations and therefore can be used for DPOR, including the optimal DPOR which explores exactly one execution in the equivalence class of the partial order \cite{Abdulla2014}.
+The advantage of this approach is that for robust programs, using the optimal DPOR algorithm with chronological traces should produce the same number of executions under SC as under relaxed memory model.
+The proposed approach is implemented in LLVM-based tool Niddhugg which supports analysis of C programs with pthreads parallelism and with bounded execution length.
 
-*   \cite{Zhang2015} -- Stateless model checking for TSO and PSO, modelling nondeterminism from both
-    scheduling and store buffering in common framework.
-    This is done by adding store buffers to the program and adding shadow thread for each store bufer which is responsible for flushing contents of this buffer to the memory.
-    This simulation of memory models is accompanied by exploration algorithm which uses stateless model checking \cite{Godefroid1997} and dynamic partial order reduction \cite{Flanagan2005dpor}.
-    Therefore, the algorithm is either limited to programs which terminate.
-    The work is mostly concerned with adapting stateless model checking with DPOR to TSO and PSO.
-    Both unboonded and with buffer mounding. Tool *rInspect* (LLVM based).
+### Unbounded Methods
 
-*   \cite{Abdulla2015} -- Executions represented by chronological traces which capture dependencies required to represent interaction between memory actions.
-    Optimal DPOR -- explore exactly one execution in the equivalence class of the partial order.
-    For robust programs, using the optimal DPOR algorithm with chronological traces should produce the same number of executions under SC as under relaxed memory model.
-    Implemented SMC, for C/pthreads, with bounded execution length.
-    Implemented in Niddhugg (LLVM based).
+There are also analysis methods which aim at being able to discover any memory-model-related bugs, regardless on number of instructions being reordered or number of context switches.
 
-*   \cite{Norris2013} -- A stateless model checking approach to the C++11 memory model (with the exception of release-consume synchronization).
-    Uses custom implementation of C++ thread and atomic libraries to produce binary which performs the analysis.
-    Based on lazy building of relations between memory operations in the form of the *modification order graph*.
-    This both prevents exploration of infeasible executions as well as unnecessary distinction between equivalent executions.
-    Futhermore, as the C++ memory model allows reordering of reads with future operation, the proposed technique allows this by propagating stored values to previous loads and validating this speculation.
-    The paper includes a long discussion about features of the C++ memory model and the correcponding implementation in \textsc{CDSChecker}.
-    The tool \textsc{CDSChecker}, is usable for (small) unit tests of concurrent data structures.
+The work \cite{Linden2010} presents approach to verification of programs under TSO with unbouded store buffers.
+It uses store buffers represented by automata and leverages cycle iteration acceleration (for cycles involving changes in only one SB) to get representation of store buffers on paths which would form cycles if values in store buffers were disregarded.
+It uses sleep set POR to reduce state space.
+The provided tool targets modified Promela language \cite{Holzmann1997}.
+Due to the limitation of acceleration to changes only in one store buffer it is not clear if the algorithm is guaranteed to terminate.
 
-*   \cite{Turon2014} -- Introduces a separation logic GPS which allows proving properties about programs using the (fragment of) C11 memory model.
-    The memory models is restricted to non-atomic, acquire-release, and sequentially consistent accesses -- i.e. it lacks support for relaxed and consume-release accesses.
+Another unbounded approach is presented in \cite{Bouajjani2015} -- it introduces TSO behaviors lazily by iterative refinement, and while it is not complete it should eventually find all errors.
+This work is based on the robustness checker presented in \cite{Bouajjani2013} and uses it to detect runs to which relaxed behavior should be added.
+There is also implementation in the tool \textsc{Trencher}.
+
+### Other Methods
+
+In \cite{Park1995}, the SPARC hierarchy of memory models (TSO, PSO, RMO) is modelled using encoding from assembly to Mur$\varphi$ \cite{murphi}.
+The encoding allows all reordering of instructions allowed by given memory model to a certain reordering bound.
+This work targets small synchronization primitives such as spin locks.
+
+In \cite{Huynh2006} an explicit state model checker for C# programs (supporting subset of C#/.NET bytecode) which uses the .NET memory model is presented.
+The verifier first verifies program under SC and then it explores additional runs allowed under .NET memory model.
+It can also insert barriers into the program to avoid relaxed runs which violate given property (that is, not all relaxed runs are disabled by barriers but only those that actually lead to property violation).
+The implementation of the exploration algorithm uses list of delayed instructions to implement instruction reordering, while the authors mention that the number of reordered instructions is not bounded, they do not discuss how this approach works for programs with cycles.
+
+The work \cite{Dan2013} presents an approach for verification of (potentially infinite state space) programs under TSO and PSO using predicate abstraction.
+The paper first shows that it is not possible to use traditional predicate abstraction to produce boolean program and then verify this boolean program using weak memory semantics.
+Instead, they propose a schema which first verifies the program under SC and then extrapolates predicates from SC run to verify a transformed version of the original program which has store buffers explicitly encoded.
+The store buffers are bounded in this transformation.
+Implementation in the tool \textsc{cupex} is also provided, as well as evaluation on 7 programs which shows advantages of their predicate extrapolation method.
+
+A completely different approach is taken in \cite{Turon2014}, this work introduces a separation logic GPS which allows proving properties about programs using the (fragment of) C11 memory model.
+That is, this work is intended for manual proving of properties of parallel programs, not for automatic verification.
+The memory models is not complete, it lacks relaxed and consume-release accesses.
