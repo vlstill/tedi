@@ -496,6 +496,14 @@ The \rel{ab} relation is created by the fences.
 
 ## POWER Memory Model
 
+POWER is a very weak, RMO-like memory model in which it is possible to observe out-of-order execution as well as various effects of multi-level caches and cache coherence protocols \cite{Sarkar2011}.
+For example, POWER allows independent writes to be propagated to different threads in different orders, or loads to be executed before control flow dependent loads (i.e. a load after a branch can be executed before the load which determines if the branch will be taken; this is not possible for writes).
+An example of POWER-allowed behavior can be found in \cite{fig:power}.
+The semantics of POWER processors is specified in numerous vendor documents \cite{TODO} and there are also some formalizations, such as \cite{Sarkar2011} which formalizes POWER 7 architecture and its predecessors (while being more over-approximative for the predecessors).
+The semantics presented in \cite{Sarkar2011} is given in a form of an abstract machine: it is an operational semantics, nevertheless, it is rather complicated due to subtleties of the architecture.
+An axiomatic semantic of POWER is given in \cite{Alglave2010_fences}, although \cite{Sarkar2011} observes that it while being in agreement with experimental results, it is not matching architectonic intend as well as their operational semantic.
+To our best knowledge, there is no formal description of the newer POWER 8 or POWER 9 architectures.
+
 ## ARM Memory Model
 
 # Memory Models of Programming Languages {#sec:langs}
