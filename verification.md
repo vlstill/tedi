@@ -31,6 +31,10 @@ These properties are often considered especially in connection with reactive sys
 They allow users to specify properties such as reaction to certain event or repeated occurrence of an event and they are evaluated on infinite runs of the program.
 With the automata-based approach to explicit-state model checking these problems are solved by solving repeated reachability of accepting states of \buchi product automaton derived from the program and the specification \cite{TODO}.
 
+#### Verification of Absence of SC Violations
+
+In this problem we ask if the program, when run under a relaxed memory model, does exhibit any runs not possible under SC.
+
 #### Verification of Compliance of Hardware to Memory Model
 
 There is also some work on verifying whether a hardware implements a given memory model.
@@ -49,6 +53,10 @@ On the other hand, in practice both valid memory locations and processes can be 
 
 The proofs use reduction from TSO/PSO reachability to lossy channel machine reachability \cite{abdulla1996verifying} to prove decidability of these memory models, reduction from lossy channel machine reachability and repeated reachability \cite{abdulla1996undecidable} to TSO to prove that the reachability problem has non-elementary complexity and that the repeated reachability problem is undecidable and finally reduction from the Post's Correspondence Problem (PCP) \cite{post1946variant} to RMO reachability to prove its undecidability.
 Furthermore, from the construction of the reduction in the repeated reachability undecidability proof and from \cite{abdulla1996undecidable} it follows that LTL  and CTL model checking problem for TSO is also undecidable.
+
+There are also several complexity results for the robustness problem.
+Interestingly, \cite{Derevenetc2014} shows that even for the POWER memory model, checking robustness of programs with finite number of finite-state threads is in \PSPACE, using an algorithm based on reduction to language emptiness.
+For PSO and TSO, \PSPACE algorithm for robustness is shown by \cite{Burnim2011}, this time the algorithm is based on monitoring of SC runs of the program.
 
 # Verification of Absence of SC Violations {#sec:analysis:adherence}
 
