@@ -17,52 +17,49 @@ Furthermore, in the second category, we consider both precise and approximative 
 
 Right from the start it is important to note that even if we limit ourselves to programs with finite-state processes there are important problems in important memory models which are not decidable (while reachability under Sequential Consistency is in \PSPACE for such programs).
 
-## Problem Definitions
+## Reachability of Error State
 
-#### Reachability of Error State
-
-In this case we ask if the program can reach an error (or goal) state from its initial state. 
+In this problem we ask if the program can reach an error (or goal) state from its initial state. 
 In practice, there can be multiple error states which are given by some property which can be evaluated on each state separately, e.g. we can look for assertion violation or memory errors. 
 
-#### Verification of Linear-Time Properties
-
-An important class of properties are properties described by Linear Temporal Logic (LTL), \cite{TODO}.
-These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite{TODO}. 
-They allow users to specify properties such as reaction to certain event or repeated occurrence of an event and they are evaluated on infinite runs of the program.
-With the automata-based approach to explicit-state model checking these problems are solved by solving repeated reachability of accepting states of \buchi product automaton derived from the program and the specification \cite{TODO}.
-
-#### Verification of Absence of SC Violations
-
-In this problem we ask if the program, when run under a relaxed memory model, does exhibit any runs not possible under SC.
-
-#### Verification of Compliance of Hardware to Memory Model
-
-There is also some work on verifying whether a hardware implements a given memory model.
-As this problem is not directly related to software verification, we will not consider such problems.
-
-## Decidability and Complexity Results
-
-According to \cite{wmdecidability} the problem of state reachability in concurrent programs with finite-state processes under relaxed memory models is decidable for TSO and PSO memory models, but not decidable for RMO.
-The repeated reachability, which can be used as basis for verification of LTL properties, is not decidable even for TSO.
-Nevertheless, the complexity of the state reachability in these programs under TSO and PSO is non-primitive recursive.
+According to \cite{wmdecidability} the problem of state reachability in concurrent programs with finite-state processes under relaxed memory models is decidable for TSO and PSO memory models, but not decidable for RMO (and therefore also not decidable for POWER and ARM).
+The complexity of the state reachability in these programs under TSO and PSO is non-primitive recursive.
 In \cite{Atig2012}, these decidability finding are further refined: a more relaxed decidable memory model, Non-Speculative Writes (NSW) is identified, and stronger claim about undecidability is proven, showing that adding relaxation which allows reordering reads after subsequent writes to TSO brings undecidability.
 
 The proofs in \cite{wmdecidability} use a very simple program model with finite-state control unit and simple memory actions.
 Furthermore, they assume that the number of memory locations and processes is fixed and that the data domain is finite.
 On the other hand, in practice both valid memory locations and processes can be created during the run of the program (and even though there is an upper bound of their number, this upper bound is not practical for use in analysis).
 
-The proofs use reduction from TSO/PSO reachability to lossy channel machine reachability \cite{abdulla1996verifying} to prove decidability of these memory models, reduction from lossy channel machine reachability and repeated reachability \cite{abdulla1996undecidable} to TSO to prove that the reachability problem has non-elementary complexity and that the repeated reachability problem is undecidable and finally reduction from the Post's Correspondence Problem (PCP) \cite{post1946variant} to RMO reachability to prove its undecidability.
-Furthermore, from the construction of the reduction in the repeated reachability undecidability proof and from \cite{abdulla1996undecidable} it follows that LTL  and CTL model checking problem for TSO is also undecidable.
+## Verification of Linear-Time Properties
 
-There are also several complexity results for the robustness problem.
+An important class of properties are properties described by Linear Temporal Logic (LTL), \cite{TODO}.
+These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite{TODO}. 
+They allow users to specify properties such as reaction to certain event or repeated occurrence of an event and they are evaluated on infinite runs of the program.
+With the automata-based approach to explicit-state model checking these problems are solved by solving repeated reachability of accepting states of \buchi product automaton derived from the program and the specification \cite{TODO}.
+
+According to \cite{wmdecidability}, repeated reachability, which can be used as basis for verification of LTL properties, is not decidable even for TSO.
+Furthermore, from the construction of the reduction in the repeated reachability undecidability proof and from \cite{abdulla1996undecidable} it follows that LTL  and CTL model checking problem for TSO is also undecidable.
+Therefore LTL model checking is undecidable for all memory models more relaxed then SC shown in this work.
+For SC, it is well known that LTL model checking is in \PSPACE for finite-state programs \cite{TODO}.
+
+## Verification of Absence of SC Violations
+
+In this problem we ask if the program, when run under a relaxed memory model, does exhibit any runs not possible under SC.
+This problem is explored under many names, e.g. \cite{Burckhardt2008} uses notion of TSO-safety, \cite{Bouajjani2013} and \cite{Derevenetc2014} use notion of robustness, and \cite{Alglave2011} uses notion of stability (which is slightly more general as it can relate two relaxed memory models together).
+
 Interestingly, \cite{Derevenetc2014} shows that even for the POWER memory model, checking robustness of programs with finite number of finite-state threads is in \PSPACE, using an algorithm based on reduction to language emptiness.
 For PSO and TSO, \PSPACE algorithm for robustness is shown by \cite{Burnim2011}, this time the algorithm is based on monitoring of SC runs of the program.
+This shows that checking that program does not exhibit relaxed behavior is significantly simpler than checking if this behavior can actually lead to an error.
+
+## Verification of Compliance of Hardware to a Memory Model
+
+There is also some work on verifying whether a hardware implements a given memory model.
+As this problem is not directly related to software verification, we will not consider such problems.
 
 # Verification of Absence of SC Violations {#sec:analysis:adherence}
 
 As the reachability problem for programs under relaxed memory models is either very expensive to solve or undecidable, an alternative approach was proposed which builds on combination of analysis under sequential consistency with a procedure which verifies that no runs under the given relaxed memory model expose behavior not exposed under SC \cite{Burckhardt2008}.
-The second part of this task is explored under many names, e.g. \cite{Burckhardt2008} uses notion of TSO-safety, \cite{Bouajjani2013} uses notion of robustness, and \cite{Alglave2011} uses notion of stability.
-The advantage of this combination is that, at least for some memory models, it has significantly lower complexity than the error reachability problem.
+he advantage of this combination is that, at least for some memory models, it has significantly lower complexity than the error reachability problem.
 For example, in the case of finite-state processes, the TSO robustness problem is in \PSPACE, the same complexity class as the SC reachability problem.
 Therefore, robustness based verification of finite-state processes under TSO is in \PSPACE while TSO error reachability is non-primitive recursive.
 
