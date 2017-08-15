@@ -2,7 +2,7 @@
 vim: wrap linebreak nolist formatoptions-=t
 ---
 
-My work so far was mostly concerned with the DIVINE model checker \cite{DIVINEToolPaper2017}.
+My work so far has been mostly concerned with the DIVINE model checker \cite{DIVINEToolPaper2017}.
 It started during my bachelor studies with techniques for compression of state space, which resulted in publication \cite{RSB15TC}.
 During my master's study, my work included heuristics for state space exploration \cite{SRB14CSDR} and transfromations of LLVM Intermediate Reprezentation \cite{SRB15weakmem, mgrthesis}.
 These transformations included optimizations which can lead to more efficient verifications and first transformations for relaxed memory models.
