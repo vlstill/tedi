@@ -5,47 +5,53 @@ vim: wrap linebreak nolist formatoptions-=t
 As analysis and verification of parallel programs is desirable and memory models play important role in correctness of these programs, there are many techniques for analysis of parallel programs under various memory models.
 In this chapter, we will first look into decidability of common verification problems under relaxed memory models and then we will review some of the analysis techniques.
 
-Such techniques can be split into two main areas, first area contains techniques which verify adherence of program to certain memory model if it runs under other, weaker (more relaxed), memory model.
-For example, they can test that given program has no TSO-enabled runs which would not be allowed under SC.
+Such techniques can be split into two main areas, first area contains techniques which verify adherence of program to a certain memory model if it runs under other, weaker (more relaxed), memory model.
+For example, they can test that given program has no runs under TSO which would not be allowed under SC.
 Some of these techniques also support fence insertion to restrict behaviours to that of the stronger memory model.
 
-The second category contains techniques which check correctness of program (according to some property) under relaxed memory model (e.g. checking for assertion safety or memory safety, or checking for LTL properties).
+The second category contains techniques which check correctness of program (according to some property) under a relaxed memory model (e.g. checking for assertion safety or memory safety or checking of LTL properties).
 While the first category can be seen as a special case of the second, we consider the distinction important as the techniques from the first category are usually not used to prove absence of certain types of erroneous behavior, but assume that all relaxed behavior is undesirable.
 Furthermore, in the second category, we consider both precise and approximative techniques.
 
 # Decidability and Complexity {#sec:decidability}
 
-Right from the start it is important to note that even if we limit ourselves to programs with finite-state processes there are important problems in important memory models which are not decidable (while reachability under Sequential Consistency is in \PSPACE for such programs).
+Right from the start it is important to note that even if we limit ourselves to programs with finite number of finite-state threads/processes, there are important problems in important memory models which are not decidable (while reachability under Sequential Consistency is in \PSPACE for such programs \cite{TODO}).
 
 ## Reachability of Error State
 
 In this problem we ask if the program can reach an error (or goal) state from its initial state. 
-In practice, there can be multiple error states which are given by some property which can be evaluated on each state separately, e.g. we can look for assertion violation or memory errors. 
+In practice, there can be multiple error states which are given by some property which can be evaluated on each state separately, e.g. we can look for assertion violation or memory errors.
 
-According to \cite{wmdecidability} the problem of state reachability in concurrent programs with finite-state processes under relaxed memory models is decidable for TSO and PSO memory models, but not decidable for RMO (and therefore also not decidable for POWER and ARM).
+\medskip
+
+According to \cite{wmdecidability}, the problem of state reachability in concurrent programs with finite-state processes running under relaxed memory models is decidable for TSO and PSO memory models, but not decidable for RMO (and therefore also not decidable for POWER and ARM).
 The complexity of the state reachability in these programs under TSO and PSO is non-primitive recursive.
 In \cite{Atig2012}, these decidability finding are further refined: a more relaxed decidable memory model, Non-Speculative Writes (NSW) is identified, and stronger claim about undecidability is proven, showing that adding relaxation which allows reordering reads after subsequent writes to TSO brings undecidability.
 
 The proofs in \cite{wmdecidability} use a very simple program model with finite-state control unit and simple memory actions.
 Furthermore, they assume that the number of memory locations and processes is fixed and that the data domain is finite.
-On the other hand, in practice both valid memory locations and processes can be created during the run of the program (and even though there is an upper bound of their number, this upper bound is not practical for use in analysis).
+On the other hand, in practice both valid memory locations and processes can be created during the run of the program (and even though there is an upper bound on their number, this upper bound is not practical for the use in analysis).
 
 ## Verification of Linear-Time Properties
 
-An important class of properties are properties described by Linear Temporal Logic (LTL), \cite{TODO}.
-These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite{TODO}. 
-They allow users to specify properties such as reaction to certain event or repeated occurrence of an event and they are evaluated on infinite runs of the program.
+An important class of properties are properties described by Linear Temporal Logic (LTL) \cite{TODO}.
+These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite{TODO}.
+They allow users to specify properties such as reaction to a certain event or repeated occurrence of an event and they are evaluated on infinite runs of the program.
 With the automata-based approach to explicit-state model checking these problems are solved by solving repeated reachability of accepting states of \buchi product automaton derived from the program and the specification \cite{TODO}.
 
+\medskip
+
 According to \cite{wmdecidability}, repeated reachability, which can be used as basis for verification of LTL properties, is not decidable even for TSO.
-Furthermore, from the construction of the reduction in the repeated reachability undecidability proof and from \cite{abdulla1996undecidable} it follows that LTL  and CTL model checking problem for TSO is also undecidable.
+Furthermore, from the construction of the reduction in the repeated reachability undecidability proof and from \cite{abdulla1996undecidable} it follows that both LTL  and CTL model checking problem for TSO is also undecidable.
 Therefore LTL model checking is undecidable for all memory models more relaxed then SC shown in this work.
 For SC, it is well known that LTL model checking is in \PSPACE for finite-state programs \cite{TODO}.
 
 ## Verification of Absence of SC Violations
 
 In this problem we ask if the program, when run under a relaxed memory model, does exhibit any runs not possible under SC.
-This problem is explored under many names, e.g. \cite{Burckhardt2008} uses notion of TSO-safety, \cite{Bouajjani2013} and \cite{Derevenetc2014} use notion of robustness, and \cite{Alglave2011} uses notion of stability (which is slightly more general as it can relate two relaxed memory models together).
+This problem is explored under many names, e.g. \cite{Burckhardt2008} uses notion of (TSO-)safety, \cite{Bouajjani2013} and \cite{Derevenetc2014} use notion of robustness, and \cite{Alglave2011} uses notion of stability (which is slightly more general as it can relate two relaxed memory models together).
+
+\medskip
 
 Interestingly, \cite{Derevenetc2014} shows that even for the POWER memory model, checking robustness of programs with finite number of finite-state threads is in \PSPACE, using an algorithm based on reduction to language emptiness.
 For PSO and TSO, \PSPACE algorithm for robustness is shown by \cite{Burnim2011}, this time the algorithm is based on monitoring of SC runs of the program.
@@ -56,34 +62,39 @@ This shows that checking that program does not exhibit relaxed behavior is signi
 There is also some work on verifying whether a hardware implements a given memory model.
 As this problem is not directly related to software verification, we will not consider such problems.
 
-# Verification of Absence of SC Violations {#sec:analysis:adherence}
+# Robustness Checking {#sec:analysis:adherence}
 
-As the reachability problem for programs under relaxed memory models is either very expensive to solve or undecidable, an alternative approach was proposed which builds on combination of analysis under sequential consistency with a procedure which verifies that no runs under the given relaxed memory model expose behavior not exposed under SC \cite{Burckhardt2008}.
-he advantage of this combination is that, at least for some memory models, it has significantly lower complexity than the error reachability problem.
-For example, in the case of finite-state processes, the TSO robustness problem is in \PSPACE, the same complexity class as the SC reachability problem.
-Therefore, robustness based verification of finite-state processes under TSO is in \PSPACE while TSO error reachability is non-primitive recursive.
+As shown in the previous section, checking robustness (absence of relaxed behavior) is significantly less complex than verifying absence of errors in relaxed runs.
+For this reason, there is an interest in combination of verification under sequential consistency with robustness checker \cite{Burckhardt2008}.
+This way, it is possible to check that program is correct under SC and if all relaxed runs are equivalent to some SC runs.
+If both of these checks succeed, it is possible to conclude that program is correct under given relaxed memory model.
+However, the disadvantage of this technique is that for correctness analysis of parallel programs it can vastly over-approximate possible errors and in practice it is often desirable to allow relaxed behaviors, provided it does not lead to an error, as it can yield much better performance \cite{TODO?}.
 
-However, the disadvantage of these techniques is that for correctness analysis of parallel programs they can vastly over-approximate possible errors as in practice it is often desirable to allow relaxed behaviors, provided it does not lead to an error, as it can yield much better performance.
+In \cite{Burckhardt2008}, a tool SOBER which allows detection of TSO violations is presented.
+This tool works by monitoring sequentially consistent runs of the program and detecting violations which would occur under TSO.
+The monitoring algorithm is based on vector clock and axiomatic definition of TSO.
 
-The works \cite{Burckhardt2008, Burnim2011} build on detecting TSO (in the case of \cite{Burckhardt2008}, tool SOBER) or both TSO and PSO (\cite{Burnim2011}, tool THRILLE) violations by monitoring sequentially consistent executions of programs.
+In \cite{Burnim2011} an alternative approach to checking robustness by monitoring SC runs is presented.
+This approach allows checking robustness under both TSO and PSO and is build on the operational semantics of these memory models.
+This monitoring algorithm is implemented in the tool THRILLE and should be asymptotically faster then the one presented in \cite{Burckhardt2008} while also being sound and complete.
+
 A more general notion of stability (which relates two arbitrary memory models) is used in \cite{Alglave2011} which explores recovering of SC from `x86` or POWER memory model.
 The work also presents the tool \textsf{offence} which inserts synchronization into `x86` or POWER assembly to ensure stability.
-Another approach for detecting non-SC behaviour (under TSO) is presented in \cite{Bouajjani2013}.
+
+Another approach for checking robustness (under TSO) is presented in \cite{Bouajjani2013}.
 This approach uses a notion of *attacks*, a form of restricted out-of-order execution which witnesses SC violation.
 Authors also provide an implementation in the tool \textsc{Trencher} which uses SC model checker (Spin \cite{Holzmann1997}) as a backend for validation of attacks.
 
-*   \cite{Yang2004} -- Presents formal semantics for a simple programming language including its precise memory semantics.
-    The motivation is to provide verification procedure for detecting data races under the Java Memory Model (JMM).
-    The formalization uses SC as it is sufficient for detection of data races under JMM (JMM defines data race freedom in terms on SC runs).
-    The entire program, memory constraits, and specification is encoded as constraint solving problem, which can be solved by constraint solver, e.g. Prolog with finite domain data as used in the presented tool
-    *DefectFindrer*.
+Concerning stronger memory models, \cite{Derevenetc2014} shows an algorithm for checking robustness under POWER, but does not provide any implementation.
+The algorithm shown in this work also assumes that the number of processes is finite and each process is a finite automaton, therefore it is not directly applicable to robustness checking of real-world programs.
+
+A somewhat related problem of data race detection is explored in \cite{Yang2004} for the Java Memory Model (JMM).
+In this case we ask if the program uses enough synchronization to avoid any data races.
+However, the JMM defines data races in terms of SC executions, this work formalizes only SC.
+The entire program, memory constraints, and specification is encoded as constraint solving problem, which can be solved by constraint solver, e.g. Prolog with finite domain data.
+This work is accompanied by a tool *DefectFindrer*.
 
 *   \TODO{Nemos framework (Non-operational yet Executable Memory Ordering Specification) -- Nemos: A framework for axiomatc and executable specificfication of memory consistency models.}
-
-*   \cite{Burnim2011} -- Present algorithms for finding violations of SC under TSO or PSO.
-    The algorithm explores only SC runs while keeping additional information for violation detection.
-    The algorithm is based on operational semantics for TSO and PSO and should be asymptotically faster then the one presented in \cite{Burckhardt2008} while also being sound and complete.
-    There is also implementation in the tool THRILLE.
 
 # Direct Analysis Techniques
 
