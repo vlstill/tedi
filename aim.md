@@ -70,17 +70,35 @@ It might be also possible to employ heuristics to direct relaxations so that it 
 
 # Time Plan
 
-The plan of my future study and research activities is following:
+The plan of the rest of my PhD study and research activities is following:
 
-\TODO{TODO}
+Now -- January 2018
 
-Now -- October 2017
-
-~   
+~   Extension of the relaxed memory support in DIVINE to the NSW memory model.
 
 January 2018
 
 ~   Doctoral exam and defense of this thesis proposal.
+
+February 2018 -- May 2018
+
+~   Development of heuristically directed search algorithm for verification under relaxed memory models in DIVINE.
+
+July 2018 -- November 2018
+
+~   Extension of relaxed memory support to POWER and ARM memory models, including development of transformation-friendly semantics of these memory models.
+
+December 2018 -- January 2019
+
+~   Extension of relaxed memory support to the C++/LLVM memory model.
+
+February 2019 -- July 2019
+
+~   Investigation and design of techniques for unbounded verification of programs running under relaxed memory models.
+
+August 2019 -- January 2020
+
+~   Text of the PhD thesis.
 
 January 2020
 
