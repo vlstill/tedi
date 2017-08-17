@@ -1,4 +1,4 @@
-ALL=$(wildcard *.md)
+ALL=$(wildcard *.md) publications.tex
 
 all : thesis.pdf # archive_README.pdf
 
