@@ -195,7 +195,7 @@ The semantics given in \cite{relaxed_opt_semantics_no_thin} is based on event st
 It is intended to allow reasoning about compiler optimizations.
 Due to its global view of the program, it is not clear if it can be used for effective analysis of larger programs.
 
-# Formally Defined Memory Models {#sec:models}
+# Memory Models of Hardware {#sec:models}
 
 In this section we will describe commonly used and formalized memory models.
 These memory models are usually derived from hardware or programming language memory models.
@@ -276,8 +276,7 @@ Finally, the update of `x` (originating from `a`) is performed.
 ## `x86`-TSO: `x86` and `x86-64` Processors
 
 The memory model used by `x86` and `x86-64` processors is basically TSO with different fences and atomic instructions.
-The memory model is described informally in Intel and AMD specification documents \cite{TODO, TODO}.
-Formal semantics derived from these documents and experimental evaluation was given in \cite{x86tso} in form of the `x86`-TSO memory model.
+The memory model is described informally in Intel and AMD specification documents and a formal semantics derived from these documents and experimental evaluation is described in the `x86`-TSO memory model \cite{x86tso}.
 The semantics of `x86`-TSO is formalized in HOL4 model and as an abstract machine.
 
 On top of stores and loads which behave as under the TSO memory model, `x86` has fence instructions, a family of read-modify-write instructions, and a compare exchange instruction.
@@ -416,11 +415,23 @@ The fence gives rise to the \rel{ab} relation.
 
 ## Relaxed Memory Order {#sec:rmo}
 
-The relaxed memory order (RMO) further relaxes NSW by allowing all pairs of memory operations to be reordering provided they don't access the same memory location.
+The relaxed memory order (RMO) further relaxes NSW by allowing all pairs of memory operations to be reordering provided they don't access the same memory location \cite{SPARC94}.
 Operational semantics for RMO usually involves guessing loaded value at the point of the load instruction and validating the guess later.
-A relaxation not allowed under NSW but allowed under RMO is demonstrated by the example in \autoref{fig:rmo}.
 
-Examples of hardware architectures with RMO-like memory models are POWER, ARM, and Alpha \cite{hw_view_for_sw_hackers}.
+RMO is supported by SPARC processors, examples of other hardware architectures with RMO-like memory models are POWER, ARM, and Alpha \cite{hw_view_for_sw_hackers}.
+
+## POWER Memory Model
+
+POWER is a very weak, RMO-like memory model in which it is possible to observe out-of-order execution as well as various effects of multi-level caches and cache coherence protocols \cite{Sarkar2011, Mador-Haim2012}.
+For example, POWER allows independent writes to be propagated to different threads in different orders, or loads to be executed before control flow dependent loads (i.e. a load after a branch can be executed before the load which determines if the branch will be taken; this is not possible for writes).
+An example of POWER-allowed behavior can be found in \autoref{fig:power}.
+
+The semantics of POWER processors is specified, apart from vendor documents, in both operational and axiomatic formalizations.
+In \cite{Sarkar2011} POWER 7 memory model is described in form of an abstract machine: it is an operational semantics, nevertheless, it is rather complicated due to subtleties of the architecture.
+This description was later extended in \cite{Sarkar2012} to support POWER's load-reserve/store-conditional instructions which are used to implement low-level primitives such as compare-and-swap and atomic read-modify-write.
+An axiomatic semantics of POWER 7 is given in \cite{Mador-Haim2012} and also in \cite{Alglave2010_fences}.
+Nevertheless, \cite{Sarkar2011} observes that it while being in agreement with experimental results, \cite{Alglave2010_fences} is not matching architectonic intend as well as their operational semantic.
+To our best knowledge, there is no formal description of the newer POWER 8 or POWER 9 architectures.
 
 \begin{figure}[tp]
 \begin{threads}{4}
@@ -485,31 +496,27 @@ r4 = x; // f
 \end{tikzpicture}
 
 \begin{caption}
-An example of behavior allowed by RMO, but not by NSW .
+An example of behavior allowed by POWER, but not by NSW .
 There are 4 threads, two of them writing one of `x` and `y`.
 The remaining two threads read these variables, but observe their updates in inverted order (i.e. the third thread first reads new value of `x` and then old value of `y`, therefore it observes `x` first, but the last thread observes new value of `y` and then old value of `x`).
 The read fences do not help in this case, as the two writes happen in independent threads an therefore are not ordered in any way with respect to each other (the fences are used only to distinguish from NSW).
 The \rel{ab} relation is created by the fences.
 \end{caption}
-\label{fig:rmo}
+\label{fig:power}
 \end{figure}
 
-## POWER Memory Model
-
-POWER is a very weak, RMO-like memory model in which it is possible to observe out-of-order execution as well as various effects of multi-level caches and cache coherence protocols \cite{Sarkar2011}.
-For example, POWER allows independent writes to be propagated to different threads in different orders, or loads to be executed before control flow dependent loads (i.e. a load after a branch can be executed before the load which determines if the branch will be taken; this is not possible for writes).
-An example of POWER-allowed behavior can be found in \cite{fig:power}.
-The semantics of POWER processors is specified in numerous vendor documents \cite{TODO} and there are also some formalizations, such as \cite{Sarkar2011} which formalizes POWER 7 architecture and its predecessors (while being more over-approximative for the predecessors).
-The semantics presented in \cite{Sarkar2011} is given in a form of an abstract machine: it is an operational semantics, nevertheless, it is rather complicated due to subtleties of the architecture.
-An axiomatic semantic of POWER is given in \cite{Alglave2010_fences}, although \cite{Sarkar2011} observes that it while being in agreement with experimental results, it is not matching architectonic intend as well as their operational semantic.
-To our best knowledge, there is no formal description of the newer POWER 8 or POWER 9 architectures.
-
 ## ARM Memory Model
+
+The ARM memory model is similar to the POWER memory model, also exposing effects of out-of-order execution and cache hierarchy \cite{Flur2016}.
+It was formalized operationally in \cite{Flur2016}, building upon the same principles as the operational model for POWER introduced in \cite{Sarkar2011}.
+Nevertheless, there are important distinctions between ARM and POWER, both from the point of observable relaxations as well as hardware causes for this relaxations.
+This operational model describes the latest ARMv8/AArch64 64bit architecture and the work compares it to the POWER 7 architecture.
+There is also an older axiomatic model of ARMv7 given in \cite{Alglave2014}.
 
 # Memory Models of Programming Languages {#sec:langs}
 
 Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs.
-In general, most programming languages give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior \TODO{tohle by chtělo nějak podložit}.
+Some programming languages (such as Java) give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior (the *data race free guarantee*) \cite{Aspinall2007}.
 On top of that, some programming languages, such as C, C++, and Java provide support for atomic operations which can be used for synchronization without locks if the platform they are running on supports it.
 C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
 
