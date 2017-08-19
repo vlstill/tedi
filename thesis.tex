@@ -222,7 +222,7 @@
     \vfill
 \end{center}
 \textbf{Supervisor:}\\
-\thesisadvisor \hfill \large \thesisYearCity
+\thesisadvisor \hfill \thesisYearCity
 }
  
 \cleardoublepage
@@ -264,7 +264,11 @@
 \chapter*{Bibliography}
 \addcontentsline{toc}{chapter}{Bibliography}
 \markboth{}{} % avoid headers from last chapter in bibliography
-\printbibliography[heading=none]
+
+{
+    \emergencystretch 3em % there is little other fixing possible for bibio
+    \printbibliography[heading=none]
+}
 
 \chapter{Publications}
 \input{publications}
