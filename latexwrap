@@ -1,6 +1,8 @@
 #!/bin/sh
 
-[ -x $(which lualatex) ] || { echo "luaflatex not found!" >&2; exit 1; }
+TEXDRIVER=xelatex
+
+[ -x $(which $TEXDRIVER) ] || { echo "luaflatex not found!" >&2; exit 1; }
 
 if [[ ${1::2} = "-n" ]]; then
     N=${1:2}
@@ -32,7 +34,7 @@ export TEXINPUTS
 # immitate rubber (actually better then rubber for beamer :-})
 echo -n "compiling $FILE"
 for i in $(seq 1 $N); do
-    if lualatex $ARGS </dev/null >/dev/null 2>/dev/null; then
+    if $TEXDRIVER $ARGS </dev/null >/dev/null 2>/dev/null; then
         echo -n '.'
         rerun=0
         if egrep -q "^LaTeX Warning:.*Rerun" $LOG || egrep -q "^\(rerunfilecheck\).*Rerun" $LOG; then

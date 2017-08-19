@@ -158,12 +158,12 @@
 
 % LUA magic
 
-\directlua{dofile("thesis.lua")}
+% \directlua{dofile("thesis.lua")}
 
-\newcommand{\mem}[1]{\directlua{tex.sprint(mem(#1))}}
-\newcommand{\dmem}[1]{\mem{#1 * 1024}}
-\newcommand{\si}[1]{\directlua{tex.sprint(si(#1))}}
-\newcommand{\speedup}[2]{\directlua{tex.sprint(speedup(#1, #2))}}
+% \newcommand{\mem}[1]{\directlua{tex.sprint(mem(#1))}}
+% \newcommand{\dmem}[1]{\mem{#1 * 1024}}
+% \newcommand{\si}[1]{\directlua{tex.sprint(si(#1))}}
+% \newcommand{\speedup}[2]{\directlua{tex.sprint(speedup(#1, #2))}}
 
 \newcommand{\antispaceatend}{\vspace*{-\topsep}}
 
