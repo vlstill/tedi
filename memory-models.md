@@ -8,36 +8,31 @@ It also depends on the compiler (or interpreter or virtual machine) which is res
 We will, however, abstract from the impact of the compiler and expect it to be correct in most of our considerations.
 We will also abstract from the impact of an operating system's scheduler which can move program threads between physical processing units, which could be visible in memory behavior, but the operating system should make sure this effect is not visible.
 
-When dealing with the memory model of the hardware, it is usually neither possible nor useful to discuss the behavior of the concrete CPU, instead, we discuss the behavior of a certain platform (e.g. Intel `x86` or POWER).
+In the hardware, there are two main sources for the relaxed memory behavior, both of them caused by the fact that the memory is several orders of magnitude slower than the processor.
+One of these sources is the cache hierarchy, which tries to hide speed differences by storing parts of the data in caches.
+The other is out-of-order execution which further improves speed by reordering the instructions and instruction speculation.
+
+Depending on the implementation of these optimizations, different relaxations are observable -- on `x86` only store buffering (delaying of propagation of writes to the memory) is observable, while on ARM or POWER reordering of all kinds of instructions is observable, as is branch prediction.
+A more detailed description of causes for memory relaxations (mainly originating from cache hierarchies) can be found in \cite{hw_view_for_sw_hackers}.
+All processors with relaxed memory also provide instructions which allow the programmer to constrain relaxations: memory fences (or barriers) which prevent reordering and atomic instructions.
+
+When dealing with the memory model of the hardware, it is usually neither possible nor useful to discuss the behavior of the concrete CPU, instead, we discuss the behavior of a certain platform (e.g. Intel `x86` or IBM POWER).
 There are at least two good reasons for this: first, results which take into account only the concrete CPU might not be applicable to any other CPU, even from the same family, and second, the exact architecture is usually kept secret by the company manufacturing those CPUs.
-Sadly, the second problem also partially applies to descriptions of the behavior of CPU platforms: relaxed memory behavior is usually described by informal documents and not by a formal specification and therefore is open to misinterpretation.
-Some of these problems can be found for example in the description of the `x86` memory model (x86-TSO) \cite{x86tso}.
-Furthermore, even when we have a formal description of the behavior of a certain platform, this description usually over-approximates possible behaviors of the program.
-For example, no reasonable platform can delay arbitrary number of memory writes, but the x86-TSO memory model allows it as the bound on such reordering is unknown.
+For this reason, hardware memory models describe processor platforms and should over-approximate behavior of processors of given platform to allow the results to remain relevant even for future processors.
+This also means that these memory models should capture intent of the hardware creators.
+The over-approximation might be also needed to simplify the memory model in order to make the subsequent program analysis simpler.
+
+Ideally, formalized memory models of hardware would be produced by the hardware manufactures themselves, but this is not the case.
+Instead, these memory models are created based on informal descriptions provided by the manufacturers, empirical testing of existing hardware, and discussion with the manufacturers \cite{x86tso, Sarkar2011, Flur2016}.
 
 Alternatively, one might describe a memory model of a programming language (or compiler, if the programming language in question does not define memory behavior of parallel programs).
 This would then allow analysis of the program to reason about its behavior on any platform for which it can be compiled (assuming the compiler is correct).
 The disadvantage is that, similar to CPU platforms, programming languages usually lack a precise formal description of the memory model, see e.g. \cite{cppmemmod} for analysis of draft of C++11 memory model.
 Furthermore, such specifications can often be unnecessarily strict: for example, according to C++11, any parallel programs in which two threads communicate without presence of locks or atomic operations has an undefined behavior and therefore can have arbitrary outcome, but in practice communication using volatile variables (and possibly compiler specific memory fences) can work well with most compilers and is often used in legacy code written before C++11 (or C11 in the case of C) where there was no support for concurrency in the language.
 
-In the following sections, we will first look into hardware constructs which give rise relaxed memory (\autoref{sec:hw}), then, in \autoref{sec:semantics} we will introduce two possibilities of precise characterization of memory models, namely an axiomatic approach based on relations between memory actions of the program and an operational model.
-In \autoref{sec:models} we will then describe common formally-defined memory models and their relation to hardware or language memory models.
-Finally in \autoref{sec:compilers} we will discuss the impact of compiler optimizations on memory models.
-
-# Hardware View of Memory Relaxation {#sec:hw}
-
-In order to understand certain characteristics of relaxed memory models, it is useful to know what hardware constructs give rise to memory relaxation and why they are used.
-
-As the memory is significantly slower that the CPU, the CPU contains cache memories which can store part of the information in the main memory in the way which makes the access faster \cite{TODO}. In modern CPUs, there are usually multiple levels of cache memory, often two or three, some of which are local to a CPU core and some might be shared among several cores of the CPU \cite{TODO}. If multiple threads work with the same memory it is important they have a consistent view of the memory, even if the values are cached in different caches. To achieve this cache consistency, CPUs employ cache coherence protocols and memory relaxations arise from optimizations of these protocols \cite{hw_view_for_sw_hackers}.
-
-For example, to avoid the need to write values directly to the memory or at least wait for other processors to acknowledge the new value, processors use store buffers which can hold written values before the propagation is completed.
-The observable effect of store buffers is that writes can appear to be executed after loads which occur after them in code.
-Furthermore, if the processor has multiple store buffers (for different memory locations), writes to different memory memory location can be observed in different order then they are executed.
-
-Reordering of reads after writes and of different writes can be caused by invalidation queues or by instruction reordering due to out-of-order execution. Some platforms (\TODO{such as Alpha}) can even exhibit reordering of dependent instructions (e.g. pointed-to value can be loaded before the pointer value).
-
-To make programming possible under these relaxations, processors provide various techniques to constrain relaxations.
-These techniques include memory fences which prevent reordering of certain classes of instructions and atomic instructions which can be used to implement some operations (such as fetch-and-add, compare-and-swap) atomically.
+In the following sections, we will first look into ways to describe memory models (\autoref{sec:semantics}).
+Then we will describe important memory models of hardware and programming languages (\autoref{sec:models}).
+Finally we will shortly discuss the impact of compiler optimizations on memory models (\autoref{sec:compilers}).
 
 # Description of Memory Model Semantics {#sec:semantics}
 
@@ -45,142 +40,27 @@ As already noted, it is often the case that CPU architecture specifications or l
 This, however, can lead to imprecision when such specification is used for as a basis for a program, compiler or analyzer implementation.
 For this reason, it is useful to have formal semantics given to memory models.
 
-Two main options are used for the description of memory model semantics, an axiomatic semantics usually based on dependency relations between actions of the program, and operational semantics which describes working of an abstract machine which implements the given memory model.
+Two main options are used for the description of memory model semantics, an axiomatic semantics usually based on dependency relations between actions of the program, and operational semantics which describes working of an abstract machine which implements given memory model.
 
 ## Axiomatic Semantics
 
 The axiomatic semantics of memory models usually builds on relations between various (memory related) actions of the program and properties of these relations.
-These relations are mostly partial orders and a sequence of operations usually adheres to a memory model if a union of memory-model-specific subset of these relations is a partial order (i.e. is acyclic).
+These relations are mostly partial orders and a sequence of operations usually adheres to a memory model if a union of memory-model-specific subset of these relations is acyclic (i.e. is a partial order).
 There are several notations for describing axiomatic semantics which mostly differ in the names of defined relations and in some detains in the description.
-Some of them are used to describe a particular memory model \cite{…; …}.
-The framework presented in \cite{Alglave2010_fences} is more general and aims at description of different memory models in a unified way by a set of common dependency relations.
-In our figures, we will borrow some notation from \cite{Alglave2010_fences}, namely the *program order relation* (\rel{po}) which orders actions performed by a single thread, the *read-from* relation (\rel{rf}) which connects a read with the store which saved the loaded value, and the *from-read* relation (\rel{fr}) which connects read with the nearest store after the one read (i.e. with the store which will overwrite the read value).
+The framework presented in \cite{Alglave2010_fences} aims at description of different memory models in a unified way by a set of common dependency relations.
+In our figures, we will borrow some notation from this framework, namely the *program order relation* (\rel{po}) which orders actions performed by a single thread, the *read-from* relation (\rel{rf}) which connects a read with the store which saved the loaded value, and the *from-read* relation (\rel{fr})[^fr] which connects read with the nearest store after the one read (i.e. with the store which will overwrite the read value).
+Furthermore, the *write serialization* relation (\rel{ws})[^ws] is notable for describing the guarantee given by all reasonable memory models: for each memory location there is a single total order of all writes to this location.
+That is, writes to a single location has to be observed in the same order by all the threads.
 Other relations will be introduced as needed in the figures.
 
-### The Problem of Out of Thin Air Reads {#sec:thin}
-
-The notion of out of thin air reads was \TODO{probably} introduced by the Java memory model \cite{javamm_Gosling2005, javamm_popl_Manson2005}.
-The idea is that a value produced by a read must not depend on itself.
-They are excluded from the Java memory models as they could allow creation of invalid pointers, effectively destroying any memory safety guarantees.
-Other programming languages, such as C and C++ allow them in their memory model, mostly in order not to disallow important optimizations (the C++ standard also states that no implementation should actually exhibit this behavior)
-Some formal memory model descriptions, such as \cite{Alglave2010_fences}, explicitly forbid out-of-thin air reads, while other allow them (e.g. the formalization of C++ memory model in \cite{cppmemmod}).
-
-See \autoref{fig:thin:naive} for example of out of thin air read.
-
-\begin{figure}[tp]
-
-\begin{subfigure}[t]{\textwidth}
-\begin{threads}{3}
-\begin{thread}
-
-```{.cpp}
-r1 = x; // a
-y = r1; // b
-```
-
-\end{thread}
-\begin{thread}
-
-```{.cpp}
-r2 = y; // c
-x = r2; // d
-```
-
-\end{thread}
-\begin{thread}
-\begin{tikzpicture}[semithick]
-    \node (a) {\texttt{a}};
-    \node[below = of a] (b) {\texttt{b}};
-    \node[right = of a] (c) {\texttt{c}};
-    \node[below = of c] (d) {\texttt{d}};
-
-    \drawrel{a}{b}{dp};
-    \drawrel[right]{c}{d}{dp};
-    \drawrel{d}{a}{rf};
-    \drawrel[right]{b}{c}{rf};
-\end{tikzpicture}
-\end{thread}
-\end{threads}
-
-\noindent
-Reachable `x == 1 && y == 1`?
-
-\begin{caption}
-An example of out of thin air reads.
-Suppose both `x` and `y` are initialized to 0, the question is if it is possible that at the end are both `x` and `y` equal to 1.
-\end{caption}
-\label{fig:thin:naive}
-\end{subfigure}
-
-\begin{subfigure}[t]{\textwidth}
-\bigskip
-\begin{threads}{3}
-\begin{thread}
-
-```{.cpp}
-r1 = x;        // a
-if ( r1 == 1 )
-    y = r1;    // b
-```
-
-\end{thread}
-\begin{thread}
-
-```{.cpp}
-r2 = y;        // c
-if ( r2 == 1 )
-    x = 1;     // d1
-else
-    x = 1;     // d2
-```
-
-\end{thread}
-\begin{thread}
-\begin{tikzpicture}[semithick]
-    \node (a) {\texttt{a}};
-    \node[below = of a] (b) {\texttt{b}};
-    \node[right = 4em of a] (c) {\texttt{c}};
-    \node[below = of c] (d) {\texttt{d1} + \texttt{d2}};
-
-    \drawrel{a}{b}{dp};
-    \drawrelgray[right]{c}{d}{po};
-    \drawrel{d}{a}{rf};
-    \drawrel[right]{b}{c}{rf};
-\end{tikzpicture}
-\end{thread}
-\end{threads}
-
-\noindent
-Reachable `r1 == 1 && r2 == 1`?
-
-\begin{caption}
-Example of program which exhibits thin air reads if we consider them to be defined by syntactical dependency, but not if we consider them defined by semantical dependency (statements `d1` and `d2` can be merged and their `if` removed which allows reordering of `c` with the merged statement).
-Note that \rel{po} is considered not to be preserved by the memory model, therefore it is gray.
-\end{caption}
-\label{fig:thin:deps}
-
-\end{subfigure}
-\begin{caption}
-Illustration of out of thin air reads and related dependency problems. \rel{dp} denotes the dependency relation.
-\end{caption}
-\end{figure}
-
-Sadly, there seems to be no widely agreed-upon definition of out of thin air reads \cite{relaxed_opt_semantics_no_thin}.
-Even in the aforementioned definition, the problem is that the dependency relation is not clearly defined -- if it is defined as syntactical dependency, that excluding thin air reads prohibits certain important optimizations.
-Indeed \cite{Sevcik2008} shows that there are commonly used optimizations which are forbidden by the Java memory mode.
-Furthermore, restricting the dependencies to semantic dependencies does not solve the problem efficiently as these are hard to compute as they are not properties of a single run of a program: in \autoref{fig:thin:deps}, it can be seen that while the write of `1` to `x` in the `then` branch of thread 2 is syntactically dependent on the load of `y`, it is not semantically dependent and indeed if the optimizer merged the two branches of the `if` and removed the `if` the write would become independent of the read.
-
-As this behaviour is especially important for programming languages because of optimizations which often do not preserve syntactic dependencies.
-On the level of assembly languages or machine code, syntactic dependencies usually coincide with notion of dependencies as seen by the processor.
-For this reason, disallowing thin air reads is well justified and practical if reasoning on the level of assembly instructions (where it is in agreement with current hardware which does not exhibit out thin air reads).
-
-An alternative semantics that aims at avoiding semantical out of thin air reads while allowing optimizations is provided in \cite{relaxed_opt_semantics_no_thin}.
+[^fr]: In other works also *conflict relation*.
+[^ws]: In other works also *coherency relation*.
 
 ## Operational Semantics
 
 Alternativelly, description of memory models can use operational semantics.
-Operational semantics describes behavior of a program in terms of its run on an abstract machine, i.e. by describing the mechanisms which cause memory relaxations (usually in a largely simplified way which should closely match behavior of the real hardware).
-This usually makes operational semantics easier to understand by programmers and also can lead to more direct implementation of analysis techniques.
+Operational semantics describes behavior of a program in terms of its run on an abstract machine, i.e. by describing the mechanisms which cause memory relaxations (usually in a largely simplified way which should closely match behavior of the real hardware, but might use very different mechanisms).
+This usually makes operational semantics easier to understand by programmers and hardware designers and also can lead to more direct implementation of certain analysis techniques.
 
 ## Other Ways of Description of Memory Models
 
@@ -189,13 +69,12 @@ There are also some works which use different frameworks to describe memory mode
 In \cite{Arvind2006} memory models are described in terms of two properties: allowed instruction reordering and *store atomicity*.
 Store atomicity roughly states that there is global interleaving of all possibly reordered operations and the authors suggest that it is a desirable property of a memory model.
 Nevertheless, most architectural memory models lack write atomicity -- both SPARC memory models (TSO/PSO/RMO) and `x86`-TSO allow loads to be satisfied from store buffer, making stores observable in the issuing thread before they can be observed in other threads; POWER further allows independent stores to become visible in different order in different threads.
-The paper describes the proposed memory model in term of partial ordering among events in the program and also suggests procedure for generation of all allowed runs of the program.
 
 The semantics given in \cite{relaxed_opt_semantics_no_thin} is based on event structures \cite{event_structures} and considers all runs of the program at once.
 It is intended to allow reasoning about compiler optimizations.
 Due to its global view of the program, it is not clear if it can be used for effective analysis of larger programs.
 
-# Memory Models of Hardware {#sec:models}
+# Formalized Memory Models {#sec:models}
 
 In this section we will describe commonly used and formalized memory models.
 These memory models are usually derived from hardware or programming language memory models.
@@ -205,7 +84,7 @@ Further significant memory models include the `x86` (and `x86-64`) memory model 
 
 ## Sequential Consistency {#sec:sc}
 
-Under sequential consistency all memory actions are immediately globally visible and therefore can be ordered by a total order (i.e. an execution of parallel program is an interleaving of actions of its threads).
+Under sequential consistency all memory actions are immediately globally visible and therefore can be ordered by a total order (i.e. an execution of parallel program is an interleaving of actions of its threads) \cite{SC_TODO}.
 Furthermore, there are no fences as SC has no need for them.
 In the operational semantics, this corresponds to machine without any caches and buffers where every write is immediately propagated to the global memory and every read reads directly from the memory.
 This is the most intuitive and strongest memory model and it is often used by program analysers, but it is not used in most modern hardware.
@@ -513,14 +392,14 @@ Nevertheless, there are important distinctions between ARM and POWER, both from 
 This operational model describes the latest ARMv8/AArch64 64bit architecture and the work compares it to the POWER 7 architecture.
 There is also an older axiomatic model of ARMv7 given in \cite{Alglave2014}.
 
-# Memory Models of Programming Languages {#sec:langs}
+## Memory Models of Programming Languages {#sec:langs}
 
 Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs.
 Some programming languages (such as Java) give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior (the *data race free guarantee*) \cite{Aspinall2007}.
 On top of that, some programming languages, such as C, C++, and Java provide support for atomic operations which can be used for synchronization without locks if the platform they are running on supports it.
 C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
 
-## C and C++
+### C and C++
 
 In C and C++ prior the 2011 standards there was no support for threads and shared memory parallelism in the language.
 In these times creators of parallel programs were dependent on platform and compiler specific libraries and primitives, e.g. the `pthread` library for threading and `__sync_*` family of functions for atomic operations in the GCC compiler.
@@ -537,9 +416,9 @@ Nevertheless, there are some differences between the formalization and N3092 (wh
 
 [^cppmemmodvs11]: \TODO{According to the clang compiler's C++ status page \cite{clangstatus} the documents defining semantics of C++ memory model and atomic instructions precede the N3092 draft.}
 
-## Java
+### Java
 
-## LLVM
+### LLVM
 
 The LLVM compiler infrastructure \cite{LLVM} used by the clang compiler comes with its own low-level programming language.
 The LLVM memory model is derived from the C++11 memory model, with the difference that it lacks release-consume ordering and offers additional *Unordered* ordering which does not guarantee atomicity but makes results of data races defined (while in C/C++ data races on non-atomic locations yield the entire run of the program undefined) \cite{llvm:langref}.
@@ -549,8 +428,8 @@ The *Unordered* operations are intended to match semantics of Java memory model 
 
 When analysing programs in high level programming languages (as opposed to analysing assembly level programs), there can be substantially more relaxation then allowed by the memory model of the hardware these programs target.
 The reason is that compilers are allowed to perform optimizations which reorder code or eliminate unnecessary memory accesses.
-This is allowed as program order for programs in languages such as C++ is not a total order even if restricted to one thread (e.g. order of evaluation of function arguments is not fixed by the standard in most cases).
 As a result, a compiler can for example merge two loads from a non-atomic variable or assume a load which follows a store to the same memory location to yield the stored value.
+Further reordering is allowed as program order for programs in languages such as C/C++ is not a total order even if restricted to one thread (e.g. order of evaluation of function arguments is not fixed by the standard in most cases).
 
 These optimizations complicate analysis if they should be taken into account.
 The two basic options for their handling include reasoning about all permitted reordering (see e.g. \cite{relaxed_opt_semantics_no_thin}), or side stepping the problem by using the same optimizing compiler to produce code both for verification and for actual execution (e.g. by verifying the binary or optimized intermediate representation of the compiler).
