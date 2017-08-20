@@ -12,7 +12,7 @@ The implementation will be primarily working with the DIVINE model checker \cite
 ## A LLVM-Based Program Transformation for Analysis of Relaxed Memory Models
 
 A large number of verifiers and analysers with support for parallel programs lack support for relaxed memory models and assume sequential consistency.
-While it is possible to extend these verifiers to relaxed memory models directly in many cases, we believe that an easier and more versatile path lies in transformation of the input formalism for these analysers, as done for example by \cite{Alglave2013}.
+While it is possible to extend these verifiers to relaxed memory models directly in many cases, we believe that an easier and more versatile path lies in transformation of the input formalism for these analysers, as done for example by \cite{Alglave2013} or \cite{Abdulla2017}. 
 This way, the input program is transformed into another program which, when run under SC, simulates runs of the original program under a given relaxed memory model.
 
 The most promising approach in this direction seems to be usage of the LLVM Intermediate Representation (LLVM IR) as the source and target for the transformation.
@@ -24,7 +24,7 @@ One of the advantages of the program transformation approach is that the same tr
 The transformation works by replacing memory operations with either fragments of code or calls to functions which provide implementation of a given operation under a relaxed memory model.
 This also means that the same transformation, but with different implementations of memory operations, can be used to simulate different memory model, which makes this approach especially suitable for evaluation of different memory models and modes of their simulation.
 
-There already exists a LLVM transformation which was developed for \cite{SRB15weakmem} and later extended for \cite{mgrthesis}.
+An initial LLVM transformation for relaxed memory models was developed for \cite{SRB15weakmem} and later extended for \cite{mgrthesis}.
 This transformation is now being updated to remove its dependence on DIVINE-specific API and make its interface more general to work with different memory model implementations.
 
 Furthermore, there are many options in optimization of the transformation, e.g. it is not necessary to transform memory operations for which it can be proven statically that they only access thread-local data.
@@ -56,53 +56,50 @@ For relaxed memory models, it is desirable that counterexamples which contain le
 
 Furthermore, it is expected that by directing exploration in this way, the algorithm will (on average) run faster for programs which contain errors.
 It might be also possible to employ heuristics to direct relaxations so that it is first applied on variables on which it is more likely to cause property violations.
+Another possibility is using robustness-base heuristics and employ relaxed memory semantics only when needed.
 
 
-## Analysis of POWER and ARM Memory Models
+## Analysis of Very Weak Memory Models
 
 The POWER and ARM memory models (which are quite similar) are important as they are very weak and there is increasing number of devices which use ARM processors and a good number of hi-performance devices powered by POWER.
 However, these memory models come with relaxations such as writes which can propagate in different order to different processors and reordering of loads with succeeding writes which can lead to seemingly cyclic dependencies.
 For this reason, these memory models are more subtle then NSW and require more advanced analysis.
 
-## Analysis of the C++ Memory Model
-
 The C11/C++11 standards came with a memory model intended to allow efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
+For this reason the C++11 memory model can be used as over-approximation of POWER/ARM in the context of C/C++.
 A very similar memory models is also used by the LLVM intermediate language.
 As DIVINE is an analyzer for C/C++ it is natural to have support for verification of programs against this memory model.
-I expect that this goal with draw heavily from the advancements introduced for POWER/ARM memory models.
 
 ## Techniques for Unbounded Memory Model Analysis
 
 Up to this point I expect to allow only bounded instruction reordering.
 However, in order to increase coverage of our analysis, I would like to investigate techniques which allow unbounded reordering.
-Such techniques could use some form of symbolic encoding delayed memory operations, such as automata-based encoding introduced in \cite{Linden2010} (which supports only TSO), or they could use abstractions.
+Such techniques could use some form of symbolic encoding of delayed memory operations, such as automata-based encoding introduced in \cite{Linden2010} (which supports only TSO), or they could use abstractions. Another possibility is using SMT-based symbolic encoding.
 All of these approaches will likely also require changes to the verification algorithm and therefore will not be implemented purely as program transformations accompanied by memory model runtime.
 
 # Time Plan
+
+\begin{stretched}
 
 The plan of the rest of my PhD study and research activities is following:
 
 Now -- January 2018
 
-~   Extension of the relaxed memory support in DIVINE to the NSW memory model.
+~   Extension of the relaxed memory support in DIVINE to the NSW memory model and design of verification-friendly semantics for NSW.
 
 January 2018
 
 ~   Doctoral exam and defense of this thesis proposal.
 
-February 2018 -- May 2018
+February 2018 -- June 2018
 
 ~   Development of heuristically directed search algorithm for verification under relaxed memory models in DIVINE.
 
-July 2018 -- November 2018
+June 2018 -- November 2018
 
-~   Extension of relaxed memory support to POWER and ARM memory models, including development of transformation-friendly semantics of these memory models.
+~   Extension of relaxed memory support to more relaxed memory models such as C++, POWER and ARM memory models, including development of transformation-friendly semantics of these memory models.
 
-December 2018 -- January 2019
-
-~   Extension of relaxed memory support to the C++/LLVM memory model.
-
-February 2019 -- July 2019
+December 2018 -- July 2019
 
 ~   Investigation and design of techniques for unbounded verification of programs running under relaxed memory models.
 
@@ -113,3 +110,5 @@ August 2019 -- January 2020
 January 2020
 
 ~   The final version of the thesis.
+
+\end{stretched}
