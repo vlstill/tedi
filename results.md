@@ -12,7 +12,7 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
 
 # Published Papers
 
-\newcommand{\fcite}[1]{\fullcite{#1}~\cite{#1}}
+\newcommand{\fcite}[1]{\emergencystretch 3em\fullcite{#1}~\cite{#1}}
 
 *   \fcite{BBH+13DIVINE}
 
