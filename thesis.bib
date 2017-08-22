@@ -576,21 +576,6 @@
     _read=1
 }
 
-@Inbook{Burnim2011,
-    author="Burnim, Jabob and Sen, Koushik and Stergiou, Christos",
-    editor="Abdulla, Parosh Aziz and Leino, K. Rustan M.",
-    title="Sound and Complete Monitoring of Sequential Consistency for Relaxed Memory Models",
-    bookTitle="Tools and Algorithms for the Construction and Analysis of Systems",
-    year="2011",
-    publisher="Springer Berlin Heidelberg",
-    address="Berlin, Heidelberg",
-    pages="11--25",
-    abstract="We present a technique for verifying that a program has no executions violating sequential consistency (SC) when run under the relaxed memory models Total Store Order (TSO) and Partial Store Order (PSO). The technique works by monitoring sequentially consistent executions of a program to detect if similar program executions could fail to be sequentially consistent under TSO or PSO. We propose novel monitoring algorithms that are sound and complete for TSO and PSO---if a program can exhibit an SC violation under TSO or PSO, then the corresponding monitor can detect this on some SC execution. The monitoring algorithms arise naturally from the operational definitions of these relaxed memory models, highlighting an advantage of viewing relaxed memory models operationally rather than axiomatically. We apply our technique to several concurrent data structures and synchronization primitives, detecting a number of violations of sequential consistency.",
-    isbn="978-3-642-19835-9",
-    doi="10.1007/978-3-642-19835-9_3",
-    url="https://doi.org/10.1007/978-3-642-19835-9_3"
-}
-
 @article{Arvind2006,
     author = {Arvind, Arvind and Maessen, Jan-Willem},
     title = {Memory Model = Instruction Reordering + Store Atomicity},
@@ -623,7 +608,7 @@
 @inproceedings{Zhang2015,
     author = {Zhang, Naling and Kusano, Markus and Wang, Chao},
     title = {Dynamic Partial Order Reduction for Relaxed Memory Models},
-    booktitle = {Proceedings of the 36th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+    booktitle = {Programming Language Design and Implementation},
     series = {PLDI '15},
     year = {2015},
     isbn = {978-1-4503-3468-6},
@@ -789,6 +774,25 @@
     keywords = {Concurrency, software verification, weak memory models},
 }
 
+@article{Lamport1979,
+    author = {Lamport, L.},
+    title = {How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs},
+    journal = {IEEE Trans. Comput.},
+    issue_date = {September 1979},
+    volume = {28},
+    number = {9},
+    month = sep,
+    year = {1979},
+    issn = {0018-9340},
+    pages = {690--691},
+    numpages = {2},
+    _url = {http://dx.doi.org/10.1109/TC.1979.1675439},
+    doi = {10.1109/TC.1979.1675439},
+    acmid = {1311750},
+    publisher = {IEEE Computer Society},
+    address = {Washington, DC, USA},
+    keywords = {Computer design, concurrent computing, hardware correctness, multiprocessing, parallel processing, parallel processing, Computer design, concurrent computing, hardware correctness, multiprocessing},
+}
 
 
 
@@ -915,7 +919,7 @@
   pages={54-64},
   keywords={C++ languages, Libraries, Software, Standards, Testing, Tools, C++, Exceptions, Model Checking, Unwinder, divine, exceptions, red hat},
   doi={10.1109/QRS.2017.15},
-  month={July},
+  month={7},
   page = {https://divine.fi.muni.cz/2017/exceptions/},
 }
 
@@ -1013,14 +1017,6 @@
   supervisor = {Jiří Barnat},
   url = {http://is.muni.cz/th/373979/fi_m/},
   keywords = {divine},
-}
-
-@online{llvm:langref,
-    author = {\llvm Project},
-    title  = {\llvm Language Reference Manual},
-    url    = {http://llvm.org/docs/LangRef.html},
-    urldate = {2016-01-09},
-    year = {2016}
 }
 
 @techreport{isocpp11draft,
@@ -1179,8 +1175,16 @@
 
 @online{LLVM,
     author = {Chris Lattner},
-    title  = {The \llvm Compiler Infrastructure Project},
+    title  = {The LLVM Compiler Infrastructure Project},
     url    = {http://llvm.org/},
-    urldate = {2016-01-09},
-    year = {2016}
+    urldate = {2017-08-22},
+    year = {2017}
+}
+
+@online{llvm:langref,
+    author = {LLVM Project},
+    title  = {LLVM Language Reference Manual},
+    url    = {http://llvm.org/docs/LangRef.html},
+    urldate = {2017-08-22},
+    year = {2017}
 }

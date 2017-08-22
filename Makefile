@@ -15,7 +15,7 @@ thesis-print.tex : thesis.tex
 		-e 's/\\iffalse.*%@ifprint/\\iftrue/' \
 		$< > $@
 
-%.bbl : bibliography.bib %.bcf
+%.bbl : thesis.bib %.bcf
 	-biber $(@:.bbl=)
 
 %.bcf :
