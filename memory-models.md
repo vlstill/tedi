@@ -397,7 +397,7 @@ There is also an older axiomatic model of ARMv7 given in \cite{Alglave2014}.
 
 Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs.
 Some programming languages give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior (the *data race free guarantee*).
-This holds for example for Java \cite{Aspinall2007} and for C++ fragment without atomics weaker then sequentially consistent \cite{Turon2014}.
+This holds for example for Java \cite{Aspinall2007} and for C++ fragment without atomics weaker then sequentially consistent \cite{Turon2014} \cite[\$1.10.21]{isocpp11draft}.
 On top of that, some programming languages, such as C, C++, and Java provide support for atomic operations which can be used for synchronization without locks if the platform they are running on supports it.
 C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
 
@@ -443,7 +443,7 @@ To that end \cite{javamm_popl_Manson2005} uses a definition which is based on ju
 Sadly, this semantics seems to be rather unfortunate -- while it intended to allow wide range of optimizations, it later turned out that it disallows certain reasonable optimizations \cite{Cenciarelli2007, Sevcik2008, Torlak2010}.
 
 Indeed the task of disallowing out-of-thin-air values while allowing optimizations is hard and there is no consensus on this topic.
-For example, the C++11 memory model allows these behaviors, but at the same time states that implementations are discouraged to exhibit them \cite{TODO}.
+For example, the C++11 memory model allows these behaviors, but at the same time states that implementations are discouraged to exhibit them \cite{cppmemmod}.
 The framework for for description of hardware memory models introduced in \cite{Alglave2010_fences} disallows out-of-thin-air values based on data and control dependencies.
 This is too strict for use in programming language memory model as these dependencies are changed by optimizers.
 It might be acceptable for hardware memory models where dependencies are more explicit and no current hardware exhibits this behavior, but \cite{Flur2016} mentions that this behavior is intentionally left allowed by the ARMv8 memory model, in accordance with intends of the hardware architects.

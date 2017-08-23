@@ -94,8 +94,6 @@ However, the JMM defines data races in terms of SC executions, this work formali
 The entire program, memory constraints, and specification is encoded as constraint solving problem, which can be solved by constraint solver, e.g. Prolog with finite domain data.
 This work is accompanied by a tool *DefectFindrer*.
 
-*   \TODO{Nemos framework (Non-operational yet Executable Memory Ordering Specification) -- Nemos: A framework for axiomatc and executable specificfication of memory consistency models.}
-
 # Direct Analysis Techniques
 
 There are many techniques for analysis of programs under relaxed memory models which mostly fall into the category of bug finding tools -- such tools are unable to prove correctness in general, but they provide substantially better coverage of possible behaviors of parallel program then testing.
