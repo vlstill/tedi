@@ -176,7 +176,7 @@ There is also implementation in the tool \textsc{Trencher}.
 
 ### Other Methods
 
-In \cite{Park1995}, the SPARC hierarchy of memory models (TSO, PSO, RMO) is modelled using encoding from assembly to Mur$\varphi$ \cite{murphi}.
+In \cite{Park1995}, the SPARC hierarchy of memory models (TSO, PSO, RMO) is modelled using encoding from assembly to Mur$\varphi$ \cite{Murphi}.
 The encoding allows all reordering of instructions allowed by given memory model to a certain reordering bound.
 This work targets small synchronization primitives such as spin locks.
 
