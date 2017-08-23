@@ -70,7 +70,7 @@ In \cite{Arvind2006} memory models are described in terms of two properties: all
 Store atomicity roughly states that there is global interleaving of all possibly reordered operations and the authors suggest that it is a desirable property of a memory model.
 Nevertheless, most architectural memory models lack write atomicity -- both SPARC memory models (TSO/PSO/RMO) and `x86`-TSO allow loads to be satisfied from store buffer, making stores observable in the issuing thread before they can be observed in other threads; POWER further allows independent stores to become visible in different order in different threads.
 
-The semantics given in \cite{relaxed_opt_semantics_no_thin} is based on event structures \cite{event_structures} and considers all runs of the program at once.
+The semantics given in \cite{PichonPharabod2016} is based on event structures \cite{event_structures} and considers all runs of the program at once.
 It is intended to allow reasoning about compiler optimizations.
 Due to its global view of the program, it is not clear if it can be used for effective analysis of larger programs.
 
@@ -84,7 +84,8 @@ Further significant memory models include the `x86` (and `x86-64`) memory model 
 
 ## Sequential Consistency {#sec:sc}
 
-Under sequential consistency all memory actions are immediately globally visible and therefore can be ordered by a total order (i.e. an execution of parallel program is an interleaving of actions of its threads) \cite{SC_TODO}.
+Under sequential consistency all memory actions are immediately globally visible and therefore can be ordered by a total order (i.e. an execution of parallel program is an interleaving of actions of its threads) \cite{Lamport1979}.
+Furthermore, each load returns the last value of written to given memory location in this total order.
 Furthermore, there are no fences as SC has no need for them.
 In the operational semantics, this corresponds to machine without any caches and buffers where every write is immediately propagated to the global memory and every read reads directly from the memory.
 This is the most intuitive and strongest memory model and it is often used by program analysers, but it is not used in most modern hardware.
@@ -395,7 +396,8 @@ There is also an older axiomatic model of ARMv7 given in \cite{Alglave2014}.
 ## Memory Models of Programming Languages {#sec:langs}
 
 Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs.
-Some programming languages (such as Java) give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior (the *data race free guarantee*) \cite{Aspinall2007}.
+Some programming languages give guarantee that programs which correctly use locks for synchronization observe sequentially consistent behavior (the *data race free guarantee*).
+This holds for example for Java \cite{Aspinall2007} and for C++ fragment without atomics weaker then sequentially consistent \cite{Turon2014}.
 On top of that, some programming languages, such as C, C++, and Java provide support for atomic operations which can be used for synchronization without locks if the platform they are running on supports it.
 C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
 
@@ -414,15 +416,38 @@ The C++ memory model is not formalized in C++11 standard, an attempt to formaliz
 While this formalization precedes the final C++11 standard, it seems[^cppmemmodvs11] that there were no changes in the specification of atomic operations after N3092.
 Nevertheless, there are some differences between the formalization and N3092 (which are justified in the paper).
 
-[^cppmemmodvs11]: \TODO{According to the clang compiler's C++ status page \cite{clangstatus} the documents defining semantics of C++ memory model and atomic instructions precede the N3092 draft.}
+A notable feature of the C++ memory model is that any program which contains data race on non-atomic variable[^race] has undefined behavior. This means that synchronization is possible only by atomic variables and concurrency primitives such as mutexes and condition variables.
 
-### Java
+[^race]: Two accesses to the same non-atomic variable, at least one of them write, which are not synchronized so that they cannot happen concurrently.
+
+[^cppmemmodvs11]: \TODO{According to the clang compiler's C++ status page \cite{clangstatus} the documents defining semantics of C++ memory model and atomic instructions precede the N3092 draft.}
 
 ### LLVM
 
 The LLVM compiler infrastructure \cite{LLVM} used by the clang compiler comes with its own low-level programming language.
 The LLVM memory model is derived from the C++11 memory model, with the difference that it lacks release-consume ordering and offers additional *Unordered* ordering which does not guarantee atomicity but makes results of data races defined (while in C/C++ data races on non-atomic locations yield the entire run of the program undefined) \cite{llvm:langref}.
 The *Unordered* operations are intended to match semantics of Java memory model for shared variables \cite{llvm:langref}.
+
+### Java
+
+The Java memory model is rather different from the C++11 one.
+Its primary goal is to ensure that programs which cannot observe data races under sequential consistency will execute as if running under sequential consistency (the data race free guarantee) \cite{javamm_popl_Manson2005}.
+Furthermore, as Java strives to be memory safe, it also defines behavior of programs with data races.
+This behavior is rather peculiar, as it is primarily concerned with prohibiting *out-of-this-air* value -- values which, informally speaking, depend cyclically on themselves.
+These values are primarily prohibited to avoid forging pointers to invalid memory or memory which should be otherwise inaccessible to a given thread \cite{javamm_popl_Manson2005}.
+
+#### Out-of-Thin-Air Values
+
+The problem with out-of-thin-air values is that it is sometimes hard to draw a line between behavior in which value occurs as a result of well established compiler optimization and where it undesirably occurs out of pure speculation.
+To that end \cite{javamm_popl_Manson2005} uses a definition which is based on justifying executions -- a kind of inductive definition in which more relaxed executions are iteratively built from less relaxed executions.
+Sadly, this semantics seems to be rather unfortunate -- while it intended to allow wide range of optimizations, it later turned out that it disallows certain reasonable optimizations \cite{Cenciarelli2007, Sevcik2008, Torlak2010}.
+
+Indeed the task of disallowing out-of-thin-air values while allowing optimizations is hard and there is no consensus on this topic.
+For example, the C++11 memory model allows these behaviors, but at the same time states that implementations are discouraged to exhibit them \cite{TODO}.
+The framework for for description of hardware memory models introduced in \cite{Alglave2010_fences} disallows out-of-thin-air values based on data and control dependencies.
+This is too strict for use in programming language memory model as these dependencies are changed by optimizers.
+It might be acceptable for hardware memory models where dependencies are more explicit and no current hardware exhibits this behavior, but \cite{Flur2016} mentions that this behavior is intentionally left allowed by the ARMv8 memory model, in accordance with intends of the hardware architects.
+An alternative specification of semantics which aims at avoiding this problem was shown in \cite{PichonPharabod2016}, proposing new formalization of fragment of C++11.
 
 # Memory Models and Compilers {#sec:compilers}
 
@@ -432,4 +457,4 @@ As a result, a compiler can for example merge two loads from a non-atomic variab
 Further reordering is allowed as program order for programs in languages such as C/C++ is not a total order even if restricted to one thread (e.g. order of evaluation of function arguments is not fixed by the standard in most cases).
 
 These optimizations complicate analysis if they should be taken into account.
-The two basic options for their handling include reasoning about all permitted reordering (see e.g. \cite{relaxed_opt_semantics_no_thin}), or side stepping the problem by using the same optimizing compiler to produce code both for verification and for actual execution (e.g. by verifying the binary or optimized intermediate representation of the compiler).
+The two basic options for their handling include reasoning about all permitted reordering (see e.g. \cite{PichonPharabod2016}), or side stepping the problem by using the same optimizing compiler to produce code both for verification and for actual execution (e.g. by verifying the binary or optimized intermediate representation of the compiler).
