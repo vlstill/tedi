@@ -16,8 +16,9 @@ While it is possible to extend these verifiers to relaxed memory models directly
 This way, the input program is transformed into another program which, when run under SC, simulates runs of the original program under a given relaxed memory model.
 
 The most promising approach in this direction seems to be usage of the LLVM Intermediate Representation (LLVM IR) as the source and target for the transformation.
-LLVM IR is widely used both by compilers (namely the clang compiler which can be used to compile C, C++, and Objective C on all major operating systems) and by a growing number of analysers: DIVINE\ \cite{DIVINEToolPaper2017} and Nidhugg \cite{Abdulla2015} have support for both LLVM IR and parallelism, CPAchecker\ \cite{Beyer2011} has support for parallelism\ \cite{Beyer2016} and there are plans to add support for LLVM IR to it.
-LLBMC \cite{Sinz2012}, KLEE \cite{Cadar2008}, and SMACK \cite{Rakamaric2014} already have support for LLVM IR, but they do not currently support parallelism without a sequentializers which pre-processes the input programs.
+LLVM IR is widely used both by compilers (namely the clang compiler which can be used to compile C, C++, and Objective C on all major operating systems) and by a growing number of analysers, such as DIVINE \cite{DIVINEToolPaper2017}, SMACK \cite{Rakamaric2014}, VVT \cite{Gunther2016}, Skink \cite{Cassez2017}, and Nidhugg \cite{Abdulla2015} that have support for both LLVM IR and parallelism.
+CPAchecker\ \cite{Beyer2011} has support for parallelism\ \cite{Beyer2016} and there are plans to add support for LLVM IR to it.
+Similarly, CBMC \cite{Clarke2004} has support for parallelism and planned support for LLVM.
 Also, LLVM IR can be rather easily transformed as it is used for optimizations in the LLVM framework.
 
 One of the advantages of the program transformation approach is that the same transformation (possibly with minor configuration) can be used for many analysers.
