@@ -12,17 +12,19 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
 
 # Published Papers
 
-\newcommand{\fcite}[1]{\emergencystretch 3em\fullcite{#1}~\cite{#1}}
+\newcommand{\fcite}[1]{\emergencystretch 3em\fullcite{#1}~\cite{#1}\medskip}
 
 *   \fcite{BBH+13DIVINE}
 
      Tool paper for DIVINE 3, I have minor contribution to the implementation of DIVINE 3 as described in this paper.
+     \medskip
 
 *   \fcite{SRB14CSDR}
 
     This paper shows that directing search of explicit-state model checker to first explore runs with low number of context switches can improve performance of the verifier as well as improve the counterexamples.
     I have made implementation and evaluation for this paper as well as written part of the text.
     I have also presented this paper on the MEMICS 2014 conference.
+     \medskip
 
 *   \fcite{RSB15TC}
 
@@ -30,22 +32,26 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
     These techniques include a tree-based compression scheme for state space storage and a custom allocation schema.
     I have made part of the implementation (concerning the compression), full evaluation and part of the text.
     I have also presented this paper on the SEFM 2015 conference.
+     \medskip
 
 *   \fcite{BRSW15HS}
 
     This paper describes efficient design of a concurrent hash table used in DIVINE.
     I have minor contributions to this paper.
+     \medskip
 
 *   \fcite{SRB15weakmem}
 
     This paper describes the approach to analysis of programs under the TSO memory model using LLVM transformation.
     I am the main author of this paper, I have made most of the design and implementation, full evaluation, and most of the text.
     I have also presented this paper on the MEMICS 2015 conference.
+     \medskip
 
 *   \fcite{BCRSZ16Prob}
 
     This paper describes chaining of DIVINE (which was extended to allow annotation of edges with probabilities) with the PRISM model checker to allow probabilistic analysis.
     I have provided small part of the implementation (concerning export of state space from DIVINE) and text concerning this part for the paper.
+     \medskip
 
 *   \fcite{SRB16SVC}
 
@@ -53,12 +59,14 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
     This paper shortly describes DIVINE and the specifics of applying it to the concurrency category of the SV-COMP.
     I am the main author of this paper, I have written most of the text as well as implemented all modifications of DIVINE which were needed for participation in SV-COMP 2016.
     I have also had short presentation of this paper in the SV-COMP session of the ETAPS/TACAS 2016 conference.
+     \medskip
 
 *   \fcite{MJSLB2017}
 
     Competition contribution for SV-COMP 2017 \cite{SV-COMP:2017}.
     This paper shortly describes tool SymDIVINE which combines explicit and symbolic approach to verification of parallel programs.
     I have made minor contributions to this paper.
+     \medskip
 
 *   \fcite{SRB2017except}
 
@@ -67,6 +75,7 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
     I am the main author of this paper: I have written most of the text and implementation for exception support in DIVINE 4 as well as performed the evaluation for this paper.
     I have also presented this paper on the QRS 2017 conference.
     The paper and its presentation was awarded with the best paper award.
+     \medskip
 
 *   \fcite{DIVINEToolPaper2017}
 
