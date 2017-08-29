@@ -2,13 +2,13 @@
 vim: wrap linebreak nolist formatoptions-=t
 ---
 
-The behavior of a program in the presence of relaxed memory is described by the corresponding relaxed memory model.
+The behaviour of a program in the presence of relaxed memory is described by the corresponding relaxed memory model.
 This memory model depends on the programming language of choice (as it can allow reordering of certain actions for the purpose of optimizations) and on the hardware on which the program is running.
 It also depends on the compiler (or interpreter or virtual machine) which is responsible for translating the program in a way that it meets the guarantees given in the specification of the programming language.
 We will abstract from the impact of the compiler and expect it to be correct in most of our considerations.
-We will also abstract from the impact of an operating system's scheduler which can move program threads between physical processing units, which could be visible in memory behavior, but the operating system should make sure this effect is not visible.
+We will also abstract from the impact of an operating system's scheduler which can move program threads between physical processing units, which could be visible in memory behaviour, but the operating system should make sure this effect is not visible.
 
-In hardware, there are two main sources for the relaxed memory behavior, both of them caused by the fact that memory is several orders of magnitude slower than the processor.
+In hardware, there are two main sources for the relaxed memory behaviour, both of them caused by the fact that memory is several orders of magnitude slower than the processor.
 One of these sources is the cache hierarchy, which tries to hide speed differences by storing parts of the data in caches.
 The other is out-of-order execution, which further improves speed by reordering the instructions and issuing instructions speculatively.
 
@@ -17,19 +17,19 @@ On `x86`, only store buffering (delaying of propagation of writes to the memory)
 A more detailed description of causes for memory relaxations (mainly originating from cache hierarchies) can be found in \cite{hw_view_for_sw_hackers}.
 All processors with relaxed memory also provide instructions which allow the programmer to constrain relaxations: memory fences (or barriers) which prevent reordering and atomic instructions such as atomic compare-and-swap or atomic read-modify-write.
 
-When dealing with the memory model of hardware, it is usually neither possible nor useful to discuss the behavior of a concrete CPU, instead, we discuss the behavior of a certain platform (e.g. Intel `x86` or IBM POWER).
+When dealing with the memory model of hardware, it is usually neither possible nor useful to discuss the behaviour of a concrete CPU, instead, we discuss the behaviour of a certain platform (e.g. Intel `x86` or IBM POWER).
 There are at least two good reasons for this: first, results which take into account only the concrete CPU might not be applicable to any other CPU, even from the same family, and second, the exact architecture is usually kept secret by the company manufacturing those CPUs.
-For this reason, hardware memory models describe processor platforms and should over-approximate the behavior of processors of a given platform and capture the intent of hardware designers to allow the results to remain relevant even for future processors.
+For this reason, hardware memory models describe processor platforms and should over-approximate the behaviour of processors of a given platform and capture the intent of hardware designers to allow the results to remain relevant even for future processors.
 The over-approximation might be also needed to simplify the memory model in order to make the subsequent program analysis simpler.
 
 Ideally, formalized memory models of hardware would be produced by the hardware manufacturers themselves, but this is often not the case.
 Instead, these memory models of contemporary platforms are usually created based on informal descriptions provided by the manufacturers, empirical testing of existing hardware, and discussion with the manufacturers \cite{x86tso, Sarkar2011, Flur2016}.
 
-Alternatively, one might describe a memory model of a programming language (or a compiler, if the programming language in question does not define memory behavior of parallel programs).
-This would then allow the analysis of a program to reason about its behavior on any platform on which it can be compiled (assuming the compiler is correct).
+Alternatively, one might describe a memory model of a programming language (or a compiler, if the programming language in question does not define memory behaviour of parallel programs).
+This would then allow the analysis of a program to reason about its behaviour on any platform on which it can be compiled (assuming the compiler is correct).
 Sadly, similarly to CPU platforms, programming languages usually lack a precise formal description of the memory model, see e.g. \cite{cppmemmod} for an analysis of a draft of the C++11 memory model.
 Furthermore, such specifications can be unnecessarily strict in some cases.
-For example, according to C++11, any parallel programs in which two threads communicate without the presence of locks or atomic operations have an undefined behavior and therefore can have arbitrary outcome.
+For example, according to C++11, any parallel programs in which two threads communicate without the presence of locks or atomic operations have an undefined behaviour and therefore can have arbitrary outcome.
 Nevertheless, in practice, communication using volatile variables (and possibly compiler-specific memory fences) can work well with most compilers and is often used in legacy code written before C++11 (or C11 in the case of C) where there was no support for concurrency in the language.
 
 In the following sections, we will first look into ways to describe memory models formally (\autoref{sec:semantics}).
@@ -212,7 +212,7 @@ r1 = x;       // d
 
 \noindent Reachable `r1 == 0`?
 \begin{caption}
-This code demonstrates behavior prohibited by TSO but allowed by PSO.
+This code demonstrates behaviour prohibited by TSO but allowed by PSO.
 In this case, the second thread waits for a guard `g` to be set and then attempts to read `x`.
 However, under PSO, writes to `x` and `g` can be reordered, resulting in action `d` reading from the initial value of `x`.
 Please note that PSO does not reorder reads and therefore `c` and `d` cannot be executed in inverted order.
@@ -306,7 +306,7 @@ Examples of other hardware architectures with RMO-like memory models are POWER, 
 
 POWER is a very weak, RMO-like memory model in which it is possible to observe out-of-order execution as well as various effects of multi-level caches and cache coherence protocols \cite{Sarkar2011, Mador-Haim2012}.
 For example, POWER allows independent writes to be propagated to different threads in different orders, or loads to be executed before control flow dependent loads (i.e. a load after a branch can be executed before the load which determines if the branch will be taken; this is not possible for writes).
-An example of POWER-allowed behavior can be found in \autoref{fig:power}.
+An example of POWER-allowed behaviour can be found in \autoref{fig:power}.
 
 The semantics of POWER processors is specified, apart from vendor documents, in both operational and axiomatic formalizations.
 In \cite{Sarkar2011} POWER 7 memory model is described in the form of an abstract machine: it is an operational semantics, nevertheless, it is rather complicated due to subtleties of the architecture.
@@ -378,7 +378,7 @@ r4 = x; // f
 \end{tikzpicture}
 
 \begin{caption}
-An example of behavior allowed by POWER, but not by NSW.
+An example of behaviour allowed by POWER, but not by NSW.
 There are 4 threads: two writers writing `x` or `y` and two readers reading both of these variables.
 The readers observe the updates in an inverted order (i.e. the third thread first reads the new value of `x` and then the old value of `y`, therefore it observes `x` first, but the last thread observes the new value of `y` and then the old value of `x`).
 The read fences do not help in this case, as the two writes happen in independent threads and therefore are not ordered in any way with respect to each other (the fences are used only to distinguish from NSW).
@@ -397,8 +397,8 @@ There is also an older axiomatic model of ARMv7 given in \cite{Alglave2014}.
 
 ## Memory Models of Programming Languages {#sec:langs}
 
-Modern programming languages often acknowledge importance of parallelism and define memory behavior of concurrent programs.
-Some programming languages give guarantees that programs which correctly use locks for synchronization observe sequentially consistent behavior (the *data race free guarantee*).
+Modern programming languages often acknowledge importance of parallelism and define memory behaviour of concurrent programs.
+Some programming languages give guarantees that programs which correctly use locks for synchronization observe sequentially consistent behaviour (the *data race free guarantee*).
 This holds for example for Java \cite{Aspinall2007} and for the fragment of C++ without atomics weaker than sequentially consistent \cite{Turon2014} \cite[\$1.10.21]{isocpp11draft}.
 On top of that, some programming languages, such as C, C++, and Java provide support for atomic operations which can be used for synchronization without locks if the platform they are running on supports it.
 C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
@@ -418,7 +418,7 @@ The C++ memory model is not formalized in C++11 standard, an attempt to formaliz
 While this formalization precedes the final C++11 standard, it seems that there were no changes in the specification of atomic operations after N3092.
 Nevertheless, there are some differences between the formalization and N3092 (which are justified in the paper).
 
-A notable feature of the C++ memory model is that any program which contains a data race on a non-atomic variable[^race] has undefined behavior. This means that synchronization is possible only by atomic variables and concurrency primitives such as mutexes and condition variables.
+A notable feature of the C++ memory model is that any program which contains a data race on a non-atomic variable[^race] has undefined behaviour. This means that synchronization is possible only by atomic variables and concurrency primitives such as mutexes and condition variables.
 
 [^race]: Data race is defined as two accesses to the same non-atomic variable, at least one of them being a write, which are not synchronized so that they cannot happen concurrently.
 
@@ -434,21 +434,21 @@ The Java memory model is rather different from the C++11 one.
 Its primary goal is to ensure that programs which cannot observe data races under sequential consistency will execute as if running under sequential consistency (the data race free guarantee) \cite{javamm_popl_Manson2005}.
 The primary means of synchronization in Java are mutexes (called monitors in Java), synchronized sections of code (which use monitors internally), and volatile variables, which roughly correspond to sequentially consistent atomics in C++11.
 
-Furthermore, as Java strives to be memory safe, it also defines behavior of programs with data races.
-This behavior is rather peculiar, as it is primarily concerned with prohibiting *out-of-thin-air* values -- values which, informally speaking, depend cyclically on themselves.
+Furthermore, as Java strives to be memory safe, it also defines behaviour of programs with data races.
+This behaviour is rather peculiar, as it is primarily concerned with prohibiting *out-of-thin-air* values -- values which, informally speaking, depend cyclically on themselves.
 These values are primarily prohibited to avoid forging pointers to invalid memory or memory which should be otherwise inaccessible to a given thread \cite{javamm_popl_Manson2005}.
 
 #### Out-of-Thin-Air Values
 
-The problem with out-of-thin-air values is that it is sometimes hard to draw a line between behavior in which value occurs as a result of a well established compiler optimization and where it undesirably occurs out of pure speculation.
+The problem with out-of-thin-air values is that it is sometimes hard to draw a line between behaviour in which value occurs as a result of a well established compiler optimization and where it undesirably occurs out of pure speculation.
 To that end \cite{javamm_popl_Manson2005} uses a definition which is based on *justifying executions* -- a kind of inductive definition in which more relaxed executions are iteratively built from less relaxed executions.
 While this semantics intended to allow wide range of optimizations, it later turned out that it disallows certain reasonable optimizations \cite{Cenciarelli2007, Sevcik2008, Torlak2010}.
 
 Indeed the task of disallowing out-of-thin-air values while allowing optimizations is hard and there is no consensus on this topic.
-For example, the C++11 memory model allows these behaviors but at the same time states that implementations are discouraged to exhibit them \cite{cppmemmod}.
+For example, the C++11 memory model allows these behaviours but at the same time states that implementations are discouraged to exhibit them \cite{cppmemmod}.
 The framework for description of hardware memory models introduced in \cite{Alglave2010_fences} disallows out-of-thin-air values based on data and control dependencies.
 This is too strict for use in programming language memory models as these dependencies are changed by optimizers.
-It might be acceptable for hardware memory models where dependencies are more explicit and no current hardware exhibits this behavior, but \cite{Flur2016} mentions that this behavior is intentionally left allowed by the ARMv8 memory model, in accordance with intents of the hardware architects.
+It might be acceptable for hardware memory models where dependencies are more explicit and no current hardware exhibits this behaviour, but \cite{Flur2016} mentions that this behaviour is intentionally left allowed by the ARMv8 memory model, in accordance with intents of the hardware architects.
 An alternative specification of semantics which aims at avoiding this problem was shown in \cite{PichonPharabod2016}, proposing new formalization of a fragment of C++11.
 
 # Memory Models and Compilers {#sec:compilers}

@@ -18,7 +18,7 @@ Each platform also comes with a specific set of atomic instructions and memory b
 Therefore, in order to be able to have the same code work on different platforms, it is useful to have support for enforcing memory operation ordering in the programming language itself.
 This support is also important as the compiler can reorder some operations while it optimizes the code and therefore it must be able to understand constructs that prevent such reordering, so they can prevent it both in the compiler and in the hardware.
 
-Unfortunately, not all programming languages provide primitives related to memory relaxation or even define behavior of parallel programs.
+Unfortunately, not all programming languages provide primitives related to memory relaxation or even define behaviour of parallel programs.
 For example, C and C++ had no support for parallel programming until the respective standards from the year 2011.
 In the older versions, parallelism was achieved only by means of libraries which provided thread manipulation and synchronization primitives (such as `pthreads` on POSIX systems) and memory ordering could have been controlled either by using these synchronization primitives or by compiler-provided language extensions.
 Apart from the lack of standardized and multi-platform parallel programming support, the problem of this approach is that it is not clear which ordering guarantees arise from the program's code.
@@ -28,7 +28,7 @@ It is then the responsibility of the compiler (and virtual machine in the case o
 \bigskip
 
 In this situation, we believe that study of memory relaxations all the way from the code in a programming language[^proglang] to the level of the hardware is important for the design of correct data structures and algorithms for parallel programs.
-Furthermore, we believe this study should produce both descriptions of memory behavior of programming languages and hardware platforms as well as tools which can help developers who design data structures and algorithms for these platforms.
+Furthermore, we believe this study should produce both descriptions of memory behaviour of programming languages and hardware platforms as well as tools which can help developers who design data structures and algorithms for these platforms.
 
 [^proglang]: By *programming language* we understand higher-level languages in which code is mostly written by humans (e.g. C, C++, and Java) and distinguish them from *assembly languages*, which use platform-specific instructions and syntax, and from *intermediate languages*, which are used in some compilers mainly for platform-independent optimizations (e.g. LLVM IR).
 

@@ -10,7 +10,7 @@ For example, they can test whether given program has no runs under TSO which wou
 Some of these techniques also support fence insertion to restrict behaviours to that of the stronger memory model.
 
 The second category aims at checking correctness of program (according to some property) under a relaxed memory model (e.g. checking for assertion safety or memory safety or checking of LTL properties).
-While the first category can be seen as a special case of the second, we consider the distinction important as the techniques from the first category are usually not used to prove absence of certain types of erroneous behavior, but assume that all relaxed behavior is undesirable.
+While the first category can be seen as a special case of the second, we consider the distinction important as the techniques from the first category are usually not used to prove absence of certain types of erroneous behaviour, but assume that all relaxed behaviour is undesirable.
 
 # Decidability and Complexity {#sec:decidability}
 
@@ -54,7 +54,7 @@ This problem is explored under many names, e.g. \cite{Burckhardt2008} uses the n
 
 Interestingly, \cite{Derevenetc2014} shows that even for the POWER memory model, checking robustness of programs with finite number of finite-state threads is in \PSPACE, using an algorithm based on reduction to language emptiness.
 For PSO and TSO, \PSPACE algorithm for robustness is shown by \cite{Burnim2011}, this time the algorithm is based on monitoring of SC runs of the program.
-This shows that checking that program does not exhibit relaxed behavior is significantly simpler than checking if this behavior can actually lead to an error.
+This shows that checking that program does not exhibit relaxed behaviour is significantly simpler than checking if this behaviour can actually lead to an error.
 
 ## Verification of Compliance of Hardware to a Memory Model
 
@@ -69,11 +69,11 @@ In practice most analysis tools use some kind of constraining of the memory-mode
 
 # Robustness Checking {#sec:analysis:adherence}
 
-As shown in the previous section, checking robustness (absence of relaxed behavior) is significantly less complex than verifying absence of errors in relaxed runs.
+As shown in the previous section, checking robustness (absence of relaxed behaviour) is significantly less complex than verifying absence of errors in relaxed runs.
 For this reason, there is an interest in combination of verification under sequential consistency with robustness checker \cite{Burckhardt2008}.
 This way, it is possible to check that program is correct under SC and if all relaxed runs are equivalent to some SC runs.
 If both of these checks succeed, it is possible to conclude that program is correct under given relaxed memory model.
-However, the disadvantage of this technique is that for correctness analysis of parallel programs it can vastly over-approximate possible errors and in practice it is often desirable to allow relaxed behaviors, provided it does not lead to an error, as it can yield much better performance \cite{TODO?}.
+However, the disadvantage of this technique is that for correctness analysis of parallel programs it can vastly over-approximate possible errors and in practice it is often desirable to allow relaxed behaviours, provided it does not lead to an error, as it can yield much better performance \cite{TODO?}.
 
 \bigskip
 
@@ -103,7 +103,7 @@ This work is accompanied by a tool *DefectFindrer*.
 
 # Direct Analysis Techniques
 
-Many techniques for safety analysis of programs under relaxed memory models fall into the category of bug finding tools -- such tools are unable to prove correctness in general, but they provide substantially better coverage of possible behaviors of parallel program then testing.
+Many techniques for safety analysis of programs under relaxed memory models fall into the category of bug finding tools -- such tools are unable to prove correctness in general, but they provide substantially better coverage of possible behaviours of parallel program then testing.
 Mostly, this incompleteness is caused by either bound on the number of instructions which can be reordered or number of context switches the program can do during any explored run.
 
 There are several reasons for this bounding, the obvious one is the time complexity of the analysis, but another important reason is that dealing with programs in programming languages is substantially more difficult then dealing with programs given as composition of finite-state processes (as assumed in the complexity analyses).
@@ -179,8 +179,8 @@ It uses sleep set POR to reduce state space.
 The provided tool targets modified Promela language \cite{Holzmann1997}.
 Due to the limitation of acceleration to changes only in one store buffer it is not clear if the algorithm is guaranteed to terminate.
 
-Another unbounded approach is presented in \cite{Bouajjani2015} -- it introduces TSO behaviors lazily by iterative refinement, and while it is not complete it should eventually find all errors.
-This work is based on the robustness checker presented in \cite{Bouajjani2013} and uses it to detect runs to which relaxed behavior should be added.
+Another unbounded approach is presented in \cite{Bouajjani2015} -- it introduces TSO behaviours lazily by iterative refinement, and while it is not complete it should eventually find all errors.
+This work is based on the robustness checker presented in \cite{Bouajjani2013} and uses it to detect runs to which relaxed behaviour should be added.
 The work is accompanied by an implementation in the tool \textsc{Trencher}.
 
 ### Other Methods
