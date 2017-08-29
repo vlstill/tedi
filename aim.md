@@ -47,7 +47,8 @@ However, while sufficient for proving its decidability, this semantics is not ef
 It also includes storing complete snapshots of memory in form of history buffers.
 Instead, we would like to resolve ordering lazily only when actually needed, which should improve scalability of the analysis and to save only relevant parts of memory history.
 
-At first, we will use bounded data structures in implementation of NSW support, therefore, the resulting analysis algorithm will not be able to prove absence of bugs.
+At first, we will use bounded data structures in implementation of NSW support.
+Therefore, the resulting analysis algorithm will not be able to prove absence of bugs as the number of instructions to be reordered will be bounded (but no other imprecisions will be introduced by this approach).
 Nevertheless, we believe this approach is reasonable as it can uncover large number of errors which are otherwise hard to find.
 
 ## Heuristically-Directed Exploration Algorithm for Analysis under Relaxed Memory Models
@@ -58,7 +59,7 @@ For relaxed memory models, it is desirable that counterexamples which contain le
 
 Furthermore, it is expected that by directing exploration to find less relaxed runs first, the algorithm will (on average) run faster for programs which contain errors.
 It might be also possible to employ heuristics to direct relaxations so that it is first applied on variables on which it is more likely to cause property violations.
-Another possibility is using robustness-based heuristics and employ relaxed memory semantics only when needed.
+Another possibility is using robustness-based heuristics and employ relaxed memory semantics only when needed, similar to \cite{Bouajjani2015}.
 
 ## Analysis of Very Weak Memory Models
 
@@ -66,8 +67,8 @@ The POWER and ARM memory models (which are quite similar) are important as they 
 However, these memory models come with relaxations such as writes which can propagate in different order to different processors and reordering of loads with succeeding writes which can lead to seemingly cyclic dependencies.
 For this reason, these memory models are more subtle then NSW and require more advanced analysis.
 
-The C11/C++11 standards came with a memory model intended to allow efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
-For this reason the C++11 memory model can be used as over-approximation of POWER/ARM in the context of C/C++.
+The C11/C++11 standards came with a memory model designed to allow efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
+For this reason the C++11 memory model is as over-approximation of the POWER/ARM memory models in the context of C/C++ programs.
 A very similar memory models is also used by the LLVM intermediate language.
 As DIVINE is an analyzer for C/C++ it is natural to have support for verification of programs against this memory model.
 
