@@ -2,14 +2,14 @@
 vim: wrap linebreak nolist formatoptions-=t
 ---
 
-Overall, the aim of my PhD research is to devise methods for efficient analysis of C and C++programs running under relaxed memory models.
+Overall, the aim of my PhD research is to devise methods for efficient analysis of C and C++ programs running under relaxed memory models.
 These methods should also be implemented and thoroughly evaluated, aiming at real-world usability.
 Namely, I would like to make it possible to apply relaxed-memory-aware analysis to unit tests of nontrivial parallel data structures and algorithms.
 The implementation will be primarily working with the DIVINE model checker \cite{DIVINEToolPaper2017}.
 
 # Objectives and Expected Results
 
-## A LLVM-Based Program Transformation for Analysis of Relaxed Memory Models
+## An LLVM-Based Program Transformation for Analysis of Relaxed Memory Models
 
 A large number of verifiers and analysers with support for parallel programs lack support for relaxed memory models and assume sequential consistency.
 While it is possible to extend these verifiers to relaxed memory models directly in many cases, we believe that an easier and more versatile path lies in transformation of the input formalism for these analysers, as done for example by \cite{Alglave2013} or \cite{Abdulla2017}. 
