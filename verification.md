@@ -31,7 +31,7 @@ The proofs in \cite{wmdecidability} use a very simple program model with finite-
 Furthermore, they assume that the number of memory locations and processes is fixed and that the data domain is finite.
 On the other hand, in practice both valid memory locations and processes can be created during the run of the program (and even though there is an upper bound on their number, this upper bound is not practical for the use in analysis).
 
-## Verification of Linear-Time Properties
+## Verification of Liveness Properties
 
 An important class of properties are properties described by Linear Temporal Logic (LTL) \cite{TODO}.
 These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite{TODO}.
