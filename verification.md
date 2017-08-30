@@ -33,17 +33,17 @@ On the other hand, in practice both valid memory locations and processes can be 
 
 ## Verification of Liveness Properties
 
-An important class of properties are properties described by Linear Temporal Logic (LTL) \cite{TODO}.
-These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite{TODO}.
+An important class of properties are liveness properties described by Linear Temporal Logic (LTL) or Computational Tree Logic (CTL).
+These properties are often considered especially in connection with reactive systems and explicit-state model checking \cite[Chapter 3]{Clarke1999}.
 They allow users to specify properties such as reaction to a certain event or repeated occurrence of an event and they are evaluated on infinite runs of the program.
-With the automata-based approach to explicit-state model checking these problems are solved by solving repeated reachability of accepting states of \buchi product automaton derived from the program and the specification \cite{TODO}.
+With the automata-based approach to explicit-state model checking these problems are solved by solving repeated reachability of accepting states of \buchi product automaton derived from the program and the specification \cite[\S 5.2]{Baier2008}.
 
 \medskip
 
 According to \cite{wmdecidability}, repeated reachability, which can be used as basis for verification of LTL properties, is not decidable even for TSO.
 Furthermore, from the construction of the reduction in the repeated reachability undecidability proof and from \cite{abdulla1996undecidable} it follows that both LTL and CTL model checking problem for TSO is also undecidable.
 Therefore LTL model checking is undecidable for all memory models more relaxed then SC shown in this work.
-For SC, it is well known that LTL model checking is in \PSPACE for finite-state programs \cite{TODO}.
+For SC, it is well known that LTL model checking is in \PSPACE for finite-state programs \cite{Sistla1985}.
 
 ## Verification of Absence of SC Violations
 
