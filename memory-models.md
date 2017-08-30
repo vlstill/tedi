@@ -399,7 +399,7 @@ There is also an older axiomatic model of ARMv7 given in \cite{Alglave2014}.
 
 Modern programming languages often acknowledge importance of parallelism and define memory behaviour of concurrent programs.
 Some programming languages give guarantees that programs which correctly use locks for synchronization observe sequentially consistent behaviour (the *data race free guarantee*).
-This holds for example for Java \cite{Aspinall2007} and for the fragment of C++ without atomics weaker than sequentially consistent \cite{Turon2014} \cite[\$1.10.21]{isocpp11draft}.
+This holds for example for Java \cite{Aspinall2007} and for the fragment of C++ without atomics weaker than sequentially consistent \cite{Turon2014} \cite[§1.10.21]{isocpp11draft}.
 On top of that, some programming languages, such as C, C++, and Java provide support for atomic operations which can be used for synchronization without locks if the platform they are running on supports it.
 C and C++ also support lower-level atomic operations with relaxed semantics which can be faster on platforms with relaxed memory.
 
