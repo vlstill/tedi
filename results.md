@@ -3,11 +3,11 @@ vim: wrap linebreak nolist formatoptions-=t
 ---
 
 My work so far has been mostly concerned with analysis of parallel programs and the DIVINE model checker \cite{DIVINEToolPaper2017}.
-It started during my bachelor studies with techniques for compression of state space, which resulted in publication \cite{RSB15TC}.
+It started during my bachelor studies with techniques for compression of state space, which resulted in the publication \cite{RSB15TC}.
 During my master's study, my work included heuristics for state space exploration \cite{SRB14CSDR} and transformations of LLVM Intermediate Representation \cite{SRB15weakmem, mgrthesis}.
 These transformations included optimizations which can lead to more efficient verifications and transformations for relaxed memory models.
 
-During my PhD work, I fist focused mostly on general verification of parallel C and C++ programs.
+During my PhD work, I first focused mostly on general verification of parallel C and C++ programs.
 This included revised support for the C++ exceptions in DIVINE \cite{SRB2017except} and a lot of work on the new version of DIVINE which mostly had character of implementation and resulted in a tool paper \cite{DIVINEToolPaper2017}.
 
 # Published Papers
@@ -21,7 +21,7 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
 
 *   \fcite{SRB14CSDR}
 
-    This paper shows that directing search of explicit-state model checker to first explore runs with low number of context switches can improve performance of the verifier as well as improve the counterexamples.
+    This paper shows that directing search of an explicit-state model checker to first explore runs with low number of context switches can improve performance of the verifier as well as the counterexamples.
     I have made implementation and evaluation for this paper as well as written part of the text.
     I have also presented this paper on the MEMICS 2014 conference.
      \medskip
@@ -56,15 +56,15 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
 *   \fcite{SRB16SVC}
 
     Competition contribution for SV-COMP 2016 \cite{SV-COMP:2016}.
-    This paper shortly describes DIVINE and the specifics of applying it to the concurrency category of the SV-COMP.
+    This paper shortly describes DIVINE and the specifics of applying it to the concurrency category of SV-COMP.
     I am the main author of this paper, I have written most of the text as well as implemented all modifications of DIVINE which were needed for participation in SV-COMP 2016.
-    I have also had short presentation of this paper in the SV-COMP session of the ETAPS/TACAS 2016 conference.
+    I have also had a short presentation of this paper in the SV-COMP session of the ETAPS/TACAS 2016 conference.
      \medskip
 
 *   \fcite{MJSLB2017}
 
     Competition contribution for SV-COMP 2017 \cite{SV-COMP:2017}.
-    This paper shortly describes tool SymDIVINE which combines explicit and symbolic approach to verification of parallel programs.
+    This paper shortly describes the SymDIVINE tool which combines explicit and symbolic approach to verification of parallel programs.
     I have made minor contributions to this paper.
      \medskip
 
@@ -74,7 +74,7 @@ This included revised support for the C++ exceptions in DIVINE \cite{SRB2017exce
     We show that carefully selecting which components of existing implementations and libraries to reuse and which to reimplement allowed us to provide full C++ exception support in DIVINE without much cost in terms of runtime performance, implementation effort or increase of complexity of the verifier.
     I am the main author of this paper: I have written most of the text and implementation for exception support in DIVINE 4 as well as performed the evaluation for this paper.
     I have also presented this paper on the QRS 2017 conference.
-    The paper and its presentation was awarded with the best paper award.
+    The paper and its presentation was awarded best paper award.
      \medskip
 
 *   \fcite{DIVINEToolPaper2017}
