@@ -56,11 +56,6 @@ Interestingly, \cite{Derevenetc2014} shows that even for the POWER memory model,
 For PSO and TSO, \PSPACE algorithm for robustness is shown by \cite{Burnim2011}, this time the algorithm is based on monitoring of SC runs of the program.
 This shows that checking that a program does not exhibit relaxed behaviour is significantly simpler than checking if this behaviour can actually lead to an error.
 
-## Verification of Compliance of Hardware to a Memory Model
-
-There is also some work on verifying whether hardware implements a given memory model.
-As this problem is not directly related to software verification, we will not consider such problems.
-
 ## Consequences of Decidability and Complexity Results
 
 It can be seen that analysis of a program under a relaxed memory model is a hard task, much harder than for a program running under SC.
@@ -207,4 +202,4 @@ A completely different approach is taken in \cite{Turon2014}.
 This work introduces a separation logic GPS, which allows proving properties about programs using (a fragment of) the C11 memory model.
 That is, this work is intended for manual proving of properties of parallel programs, not for automatic verification.
 The memory model is not complete, it lacks relaxed and consume-release accesses.
-Another fragment of the C11 memory model is targeted by the RSL separation logic in \cite{Vafeiadis2013}.
+Another fragment of the C11 memory model is targeted by the RSL separation logic introduced in \cite{Vafeiadis2013}.
