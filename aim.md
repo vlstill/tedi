@@ -21,12 +21,12 @@ Furthermore, CPAchecker\ \cite{Beyer2011} has support for parallelism\ \cite{Bey
 Similarly, CBMC \cite{Clarke2004} has support for parallelism and planned support for LLVM.
 Also, LLVM IR can be rather easily transformed as it is used for optimizations in the LLVM framework.
 
-One of the advantages of the program transformation approach is that the same transformation (possibly with minor configuration) can be used for many analysers.
+One of the advantages of the program transformation approach is that the same transformation can be used for many analysers.
 The transformation works by replacing memory operations with either fragments of code or calls to functions which provide implementation of a given operation under a relaxed memory model.
-This also means that the same transformation, but with different implementations of memory operations, can be used to simulate different memory model, which makes this approach especially suitable for evaluation of different memory models and modes of their simulation.
+This also means that the same transformation, but with different implementations of memory operations, can be used for evaluation of different memory models and modes of their simulation.
 
 An initial LLVM transformation for relaxed memory models was developed for \cite{SRB15weakmem} and later extended for \cite{mgrthesis}.
-This transformation is now being updated to remove its dependence on DIVINE-specific API and make its interface more general to work with different memory model implementations.
+This transformation is now being updated to remove its dependence on a DIVINE-specific API and make its interface more general to work with different memory model implementations.
 
 Furthermore, there are many options in optimization of the transformation, e.g. it is not necessary to transform memory operations for which it can be proven statically that they only access thread-local data.
 The first of my aims is therefore finishing this program transformation and its optimizations.
@@ -35,42 +35,42 @@ The transformation will be used as a basis for implementation of memory-model-aw
 ## An Efficient Support for Non-Speculative Writes Memory Model
 
 The program transformation needs to be accompanied by implementation of memory model operations (memory model runtime).
-The existing implementations for DIVINE \cite{SRB15weakmem, mgrthesis} support either TSO or a subset of the C++11 memory model without read reordering, both of which use buffer bounding to limit state space explosion and achieve decidability while keeping the implementation simple.
+The existing implementations for DIVINE \cite{SRB15weakmem, mgrthesis} support either TSO or a subset of the C++11 memory model without read reordering, both of which use buffer bounding to limit the state space explosion and achieve decidability while keeping the implementation simple.
 
 I would like to implement a framework for simulation of various memory models.
 The first step in this direction will be to design an efficient operational model for the Non-Speculative Writes memory model.
-This operational model should be designed so that it can be efficiently implemented and provide good performance for the verification.
+This operational model should be designed so that it can be efficiently implemented and provide good performance for verification.
 
-The NSW memory model was chosen as it is decidable for programs with finite-state threads, it is more relaxed then PSO, and it should be possible to implement it reasonably efficiently.
-To the best of our knowledge, the only operational semantics for NSW is given in \cite{Atig2012} when it is introduced.
-However, while sufficient for proving its decidability, this semantics is not efficient for verification as it needs to resolve ordering of memory events eagerly, which leads to lot of branching it the explored state space.
+The NSW memory model was chosen as it is decidable for programs with a finite number of finite-state threads, it is more relaxed than PSO, and it should be possible to implement it reasonably efficiently.
+To the best of our knowledge, the only operational semantics for NSW is given in \cite{Atig2012} where it is introduced.
+However, while sufficient for proving its decidability, this semantics is not efficient for verification as it needs to resolve ordering of memory events eagerly, which leads to a lot of branching in the explored state space.
 It also includes storing complete snapshots of memory in form of history buffers.
 Instead, we would like to resolve ordering lazily only when actually needed, which should improve scalability of the analysis and to save only relevant parts of memory history.
 
-At first, we will use bounded data structures in implementation of NSW support.
-Therefore, the resulting analysis algorithm will not be able to prove absence of bugs as the number of instructions to be reordered will be bounded (but no other imprecisions will be introduced by this approach).
-Nevertheless, we believe this approach is reasonable as it can uncover large number of errors which are otherwise hard to find.
+At first, we will use bounded data structures in the implementation of NSW support.
+Therefore, the resulting analysis algorithm will not be able to prove the absence of bugs as the number of instructions to be reordered will be bounded (but no other imprecisions will be introduced by this approach).
+Nevertheless, we believe this approach is reasonable as it can uncover a large number of errors which would otherwise be hard to find.
 
 ## Heuristically-Directed Exploration Algorithm for Analysis under Relaxed Memory Models
 
-An important aspect for usability of automatic verification and analysis techniques such as model-checking is their ability to produce property violation witness (counterexample) in the case property violation is found.
+An important aspect of usability of automatic verification and analysis techniques such as model checking is their ability to produce a property violation witness (counterexample) in case a property violation is found.
 However, usability of these counterexamples depends a lot on the exploration strategy employed by the analyser.
-For relaxed memory models, it is desirable that counterexamples which contain least possible deviations from sequential consistency are found first.
+For relaxed memory models, it is desirable that counterexamples which contain minimum possible number of deviations from sequential consistency are found first.
 
 Furthermore, it is expected that by directing exploration to find less relaxed runs first, the algorithm will (on average) run faster for programs which contain errors.
-It might be also possible to employ heuristics to direct relaxations so that it is first applied on variables on which it is more likely to cause property violations.
+It might be also possible to employ heuristics to direct relaxations so that relaxed behaviour is first applied on variables on which it is more likely to cause property violations.
 Another possibility is using robustness-based heuristics and employ relaxed memory semantics only when needed, similar to \cite{Bouajjani2015}.
 
 ## Analysis of Very Weak Memory Models
 
 The POWER and ARM memory models (which are quite similar) are important as they are very weak and there is increasing number of devices which use ARM processors and a good number of hi-performance devices powered by POWER.
 However, these memory models come with relaxations such as writes which can propagate in different order to different processors and reordering of loads with succeeding writes which can lead to seemingly cyclic dependencies.
-For this reason, these memory models are more subtle then NSW and require more advanced analysis.
+For this reason, these memory models are more subtle than NSW and require more advanced analysis.
 
-The C11/C++11 standards came with a memory model designed to allow efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
-For this reason the C++11 memory model is as over-approximation of the POWER/ARM memory models in the context of C/C++ programs.
-A very similar memory models is also used by the LLVM intermediate language.
-As DIVINE is an analyzer for C/C++ it is natural to have support for verification of programs against this memory model.
+The C11/C++11 standards came with a memory model designed to allow for an efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
+Therefore, the C++11 memory model is as over-approximation of the POWER/ARM memory models in the context of C/C++ programs, in the sense that all behaviours possible under POWER/ARM are also possible under the C++11 memory model.
+A very similar memory model is also used by the LLVM intermediate language.
+As DIVINE is an analyzer for C/C++, it is natural to have support for verification of programs under this memory model.
 
 ## Techniques for Unbounded Memory Model Analysis
 
