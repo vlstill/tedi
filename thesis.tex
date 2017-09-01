@@ -132,6 +132,7 @@
 
 \addbibresource{thesis.bib}
 
+\usepackage[pass]{geometry}
 \usepackage{setspace}
 % \addtolength\textwidth{5pt} % about 129mm
 % \addtolength\oddsidemargin{1cm}
@@ -205,9 +206,9 @@
 % initial pages from Mornfall + modifications
 
 \frontmatter
-\pagestyle{empty}
  
-{
+\begin{titlepage}
+\newgeometry{margin=4cm}
 \begin{center}
     {\Large \sc \FI, \MU}
     \vskip4em
@@ -224,7 +225,7 @@
 \end{center}
 \textbf{Supervisor:}\\
 \thesisadvisor \hfill \thesisYearCity
-}
+\end{titlepage}
  
 \cleardoublepage
 
