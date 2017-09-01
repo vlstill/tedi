@@ -222,7 +222,7 @@ Please note that PSO does not reorder reads and therefore `c` and `d` cannot be 
 
 ## Non-Speculative Writes {#sec:nsw}
 
-The Non-Speculative Writes (NSW) memory model was introduced in \cite{Atig2012} as a memory model which is more relaxed than PSO but whose reachability problem for programs with finite state threads is still decidable.
+The Non-Speculative Writes (NSW) memory model, introduced in \cite{Atig2012}, is a memory model which is more relaxed than PSO but whose reachability problem for programs with a finite number of finite-state threads is still decidable.
 The operation model for NSW is also defined in \cite{Atig2012}.
 It uses two levels of store buffers and a memory history buffer for reordering of reads.
 

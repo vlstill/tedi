@@ -81,9 +81,8 @@ An alternative approach to checking robustness by monitoring SC runs is presente
 This approach allows checking robustness under both TSO and PSO and is built on the operational semantics of these memory models.
 This monitoring algorithm is implemented in the tool THRILLE and should be asymptotically faster than the one presented in \cite{Burckhardt2008} while also being sound and complete.
 
-Another approach to checking robustness under TSO is presented in \cite{Bouajjani2013}.
-This approach uses the notion of *attacks*, a form of restricted out-of-order execution which witnesses SC violations.
-The authors also provide an implementation in the \textsc{Trencher} tool which uses the SC model checker Spin \cite{Holzmann1997} as the backend for validation of attacks.
+Another possibility for checking TSO robustness is to use *attacks*, a form of restricted out-of-order execution which witnesses SC violations.
+This approach is presented in \cite{Bouajjani2013}, together with an implementation in the \textsc{Trencher} tool which uses the SC model checker Spin \cite{Holzmann1997} as the backend for validation of attacks.
 
 Restring programs running under the `x86` or POWER memory models to SC behaviours is explored in \cite{Alglave2011}.
 The work also presents \textsf{offence}, a tool which inserts synchronization into `x86` or POWER assembly to ensure stability.
@@ -91,11 +90,14 @@ The work also presents \textsf{offence}, a tool which inserts synchronization in
 Concerning stronger memory models, \cite{Derevenetc2014} shows an algorithm for checking robustness under POWER, but does not provide any implementation.
 The algorithm presented in this work also assumes that the number of processes is fixed and each process is a finite automaton, therefore it is not directly applicable to robustness checking of real-world programs.
 
-A somewhat related problem of data race detection is explored in \cite{Yang2004} for the Java Memory Model (JMM).
+For programming languages with the data race free guarantee,[^drf] data race freedom can be used as sufficient condition for robustness.
+The problem of data race detection is explored for example in \cite{Yang2004} for the Java Memory Model (JMM).
 In this case we ask if the program uses enough synchronization to avoid any data races.
 However, as the JMM defines data races in terms of SC executions, this work only formalizes SC.
 The entire program, memory constraints, and the specification is encoded as a constraint solving problem, which can be solved by a constraint solver, e.g. Prolog with finite domain data.
 This work is accompanied by the  *DefectFinder* tool.
+
+[^drf]: Stating that data race free programs observe only sequentially consistent behaviours.
 
 # Direct Analysis Techniques
 

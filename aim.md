@@ -67,7 +67,7 @@ The POWER and ARM memory models (which are quite similar) are important as they 
 However, these memory models come with relaxations such as writes which can propagate in different order to different processors and reordering of loads with succeeding writes which can lead to seemingly cyclic dependencies.
 For this reason, these memory models are more subtle than NSW and require a more advanced analysis.
 
-The C11/C++11 standards came with a memory model designed to allow for an efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
+The C11 and C++11 standards came with a memory model designed to allow for an efficient multi-platform implementation of parallel primitives, even on very relaxed platforms such as POWER/ARM.
 Therefore, the C++11 memory model is as over-approximation of the POWER/ARM memory models in the context of C/C++ programs, in the sense that all behaviours possible under POWER/ARM are also possible under the C++11 memory model.
 A very similar memory model is also used by the LLVM intermediate language.
 As DIVINE is an analyzer for C/C++, it is natural to have support for verification of programs under this memory model.
