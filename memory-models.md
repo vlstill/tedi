@@ -82,8 +82,10 @@ In this section we describe commonly used and formalized memory models.
 These memory models are usually derived from hardware or programming language memory models.
 In older works, most notable memory models (apart from Sequential Consistency) were memory models of the SPARC processors.
 These processors can be configured for different memory models (given in order from most strict to most relaxed): Total Store Order (TSO), Partial Store Order (PSO), Relaxed Memory Order (RMO) \cite{SPARC94}.
-Later memory models include Non-Speculative Writes (NSW) memory model, which is more relaxed than PSO but less relaxed than RMO and is notable because the reachability problem of programs with finite state processes under NSW is decidable while for RMO this problem is not decidable, which makes this memory model significant even if it does not describe any hardware implementation.
-Further significant memory models include the `x86` (and `x86-64`) memory model formalized as `x86`-TSO, POWER and ARM memory models, and memory models of certain programming languages, namely Java (Java was the first mainstream programming language with a defined memory model), C#, and C/C++11.
+Later memory models include Non-Speculative Writes (NSW) memory model presented in \cite{Atig2012}.
+NSW is more relaxed than PSO but less relaxed than RMO and is notable because the reachability problem of programs with finite state processes under NSW is decidable while for RMO this problem is not decidable.
+This makes NSW significant even if it does not describe any hardware implementation.
+Further significant memory models include the `x86` (and `x86-64`) memory model formalized as `x86`-TSO \cite{x86tso}, POWER and ARM memory models, and memory models of certain programming languages, namely Java (Java was the first mainstream programming language with a defined memory model), C#, and C/C++11.
 
 ## Sequential Consistency {#sec:sc}
 
