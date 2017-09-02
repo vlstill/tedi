@@ -69,7 +69,7 @@ For this reason, there is an interest in combination of verification under seque
 This way, it is possible to check that program is correct under SC and whether all relaxed runs are equivalent to some SC runs.
 If both of these checks succeed, it can be concluded that the program is correct under a given relaxed memory model.
 However, the disadvantage of this technique is that for correctness analysis of parallel programs it can vastly over-approximate possible errors.
-In practice it is often desirable to allow relaxed behaviours, provided they do not lead to errors: a careful use of relaxed memory can yield much better performance than restricting the program to SC \cite{TODO?}.
+In practice it is often desirable to allow relaxed behaviours, provided they do not lead to errors: a careful use of relaxed memory can yield much better performance than restricting the program to SC.
 
 \bigskip
 
