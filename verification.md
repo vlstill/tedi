@@ -15,7 +15,7 @@ While the first category can be seen as a special case of the second, we conside
 
 # Decidability and Complexity {#sec:decidability}
 
-Right from the start it is important to note that even if we limit ourselves to programs with a finite number of finite-state threads/processes, there are important problems in widely-used memory models which are not decidable (while reachability under Sequential Consistency is in \PSPACE for such programs \cite{TODO}).
+Right from the start it is important to note that even if we limit ourselves to programs with a finite number of finite-state threads/processes, there are important problems in widely-used memory models which are not decidable (while reachability under Sequential Consistency is in \PSPACE for such programs \cite{Sistla1985}).
 
 ## Reachability of Error State
 
