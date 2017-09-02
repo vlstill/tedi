@@ -9,8 +9,8 @@ This means that the natural interleaving model of parallelism used both by devel
 The problem is further complicated by the fact that different hardware platforms have different memory models which allow various levels of instruction reordering.
 
 This PhD thesis proposal is dedicated to the problem of analysis of parallel programs running on hardware with relaxed memory semantics.
-It first present state-of-the-art in description of memory models and in analysis techniques which take them into the account.
-It further presents goals for the rest of my PhD studies, which is devising methods for efficient analysis of C and C++ programs running under relaxed memory models.
+It first presents the state-of-the-art in description of memory models and in analysis techniques which take them into account.
+It further presents goals for the rest of my PhD studies, concretely devising methods for efficient analysis of C and C++ programs running under relaxed memory models.
 These analysis techniques should be applicable to unit tests of parallel synchronization primitives, data structures, and algorithms.
 All the techniques will be implemented in the DIVINE model checker.
 Finally, the thesis proposal summarises my achieved results.
