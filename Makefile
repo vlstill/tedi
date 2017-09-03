@@ -1,11 +1,12 @@
 ALL=$(wildcard *.md) publications.tex
+PAPERS=atva2017.pdf memics2015.pdf qrs2017.pdf sefm2015.pdf
 
 all : thesis.pdf # archive_README.pdf
 
-thesis.pdf : thesis.tex $(ALL:.md=.tex) thesis.bbl thesis.lua
+thesis.pdf : thesis.tex $(ALL:.md=.tex) thesis.bbl thesis.lua $(PAPERS)
 	./latexwrap $<
 
-thesis-print.pdf : thesis-print.tex $(ALL:.md=.tex) thesis-print.bbl thesis.lua
+thesis-print.pdf : thesis-print.tex $(ALL:.md=.tex) thesis-print.bbl thesis.lua $(PAPERS)
 	./latexwrap $<
 
 thesis-print.tex : thesis.tex
@@ -82,5 +83,17 @@ check :
 	tar xafv archive/llvmtrans.tar.gz
 	cd llvmtrans/thesis && make
 	cd llvmtrans/divine && chmod +x configure && ./configure && make lart divine
+
+atva2017.pdf :
+	wget -O $@ https://paradise.fi.muni.cz/publications/pdf/DIVINEToolPaper2017.pdf
+	
+qrs2017.pdf :
+	wget -O $@ https://paradise.fi.muni.cz/publications/pdf/SRB2017.pdf
+
+memics2015.pdf :
+	wget -O $@ https://paradise.fi.muni.cz/publications/pdf/SRB15weakmem.pdf
+	
+sefm2015.pdf :
+	wget -O $@ https://paradise.fi.muni.cz/publications/pdf/RSB15TC.pdf
 
 .PHONY: archive check
