@@ -3,10 +3,10 @@ PAPERS=atva2017.pdf memics2015.pdf qrs2017.pdf sefm2015.pdf
 
 all : thesis.pdf # archive_README.pdf
 
-thesis.pdf : thesis.tex $(ALL:.md=.tex) thesis.bbl thesis.lua $(PAPERS)
+thesis.pdf : thesis.tex $(ALL:.md=.tex) thesis.bbl $(PAPERS)
 	./latexwrap $<
 
-thesis-print.pdf : thesis-print.tex $(ALL:.md=.tex) thesis-print.bbl thesis.lua $(PAPERS)
+thesis-print.pdf : thesis-print.tex $(ALL:.md=.tex) thesis-print.bbl $(PAPERS)
 	./latexwrap $<
 
 thesis-print.tex : thesis.tex
